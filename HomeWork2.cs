@@ -1,4 +1,4 @@
-﻿
+
 namespace HomeWork2
 {
     // Task 1
@@ -60,8 +60,6 @@ namespace HomeWork2
 
                     temp = temp.nextElement;
                     // помечаем как пустышки
-
-
                 }
                 end = newNode;
                 temp.nextElement = end;
@@ -180,9 +178,7 @@ namespace HomeWork2
                 {
                     temp = temp.nextElement!;
                 }
-
                 return temp;
-
             }
         }
 
@@ -231,6 +227,7 @@ namespace HomeWork2
                 Console.WriteLine("Empty table!");
                 return false;
             }
+
             Node<T> current = begin;
 
             if (nodeNumber > nodesCount)
@@ -397,7 +394,16 @@ namespace HomeWork2
 
         public static void ShowInfo(HashTable<T> table)
         {
-            newLinkedList<T>.ShowInfo(table);
+            bool isEmpty = table.nodesCount > 0 ? false : true;
+            if (isEmpty)
+            {
+                Console.WriteLine("The table is empty!");
+            }
+            else
+            {
+                Console.WriteLine("Current table has {0} elements, {1} elements is real, {2} elements is empty",
+                    table.nodesCount, table.nodesCount - table.emptyCount, table.emptyCount);
+            }
             ShowLinnkedList(table);
         }
     }
@@ -429,7 +435,6 @@ namespace HomeWork2
                     '(' => 0,
                     ')' => 0
                 };
-
             }
         }
 
@@ -440,7 +445,7 @@ namespace HomeWork2
         //    Multiply,
         //    Divide
         //}
-        //
+        
         private static double DoOperation(double x, double y, Operation op)
         {
             double result = op.operationName switch
@@ -508,7 +513,6 @@ namespace HomeWork2
             isPreviousOperation = false;
             operationStackSize--;
             isNextSign = false;
-
         }
 
         private static void ifBinary(Operation op) // Вот это поебень я сделал
@@ -552,10 +556,8 @@ namespace HomeWork2
             isNextSign = false;
             isPreviousOperation = true;
             operationStackSize++;
-
             //ShowOpStack();
             //ShowOutStack();
-
         }
 
 
@@ -643,27 +645,6 @@ namespace HomeWork2
                 Console.WriteLine(operationStack[step].operationName + " ");
             }
             //Console.WriteLine();
-        }
-        /*
-        public static double Calculation (in string formula)
-        {
-            double result;
-            StackCalculator.CreateStack(formula);
-            if (outStack == null)
-            {
-                return double.NaN;
-            }
-            int positionInStack = 0;
-            double firstNumber;
-            double secondNumber;
-            Operation op;
-            while(positionInStack < outStackSize)
-            {
-
-            }
-
-        }
-        */
+        }        
     }
-
 }
