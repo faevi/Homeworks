@@ -1,4 +1,0 @@
-﻿global using HomeWork2;
-
-
-
