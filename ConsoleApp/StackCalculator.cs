@@ -10,7 +10,17 @@ namespace HomeWork2
         private static bool isNextSign = true;
         private static bool isPreviousOperation = false;
 
-        private struct Operation
+        protected StackCalculator(in string formula)
+        {
+            operationStackSize = 0;
+            outStackSize = 0;
+            isNextSign = true;
+            isPreviousOperation = false;
+            operationStack = new Operation[formula.Length];
+            outStack = new string[formula.Length];
+        }
+
+        protected struct Operation
         {
             public char operationName { get; set; }
             public int operationPriority { get; set; }
@@ -37,7 +47,7 @@ namespace HomeWork2
         //    Divide
         //}
 
-        private static double DoOperation(double x, double y, Operation op)
+        protected static double DoOperation(double x, double y, Operation op)
         {
             double result = op.operationName switch
             {
@@ -49,34 +59,34 @@ namespace HomeWork2
             return result;
         }
 
-        private static void ChangeStack(Operation op)
+        protected static void ChangeStack(Operation op, StackCalculator calc)
         {
             //Console.WriteLine("Im trying to add operation: {0}, outStackSize: {1}, opStack Size: {2}", op.operationName, outStackSize, operationStackSize);
             //outStackSize++;
             switch (op.operationName)
             {
                 case '(':
-                    ifOpenScobe(op);
+                    calc.ifOpenScobe(op);
                     break;
                 case ')':
-                    ifCloseScobe();
+                    calc.ifCloseScobe();
                     break;
                 case '+':
-                    ifBinary(op);
+                    calc.ifBinary(op);
                     break;
                 case '-':
-                    ifBinary(op);
+                    calc.ifBinary(op);
                     break;
                 case '/':
-                    ifBinary(op);
+                    calc.ifBinary(op);
                     break;
                 case '*':
-                    ifBinary(op);
+                    calc.ifBinary(op);
                     break;
             }
         }
 
-        private static void ifOpenScobe(in Operation ch)
+        protected virtual void ifOpenScobe(in Operation ch)
         {
             operationStack[operationStackSize] = ch;
             operationStackSize++;
@@ -84,7 +94,7 @@ namespace HomeWork2
             isPreviousOperation = false;
         }
 
-        private static void ifCloseScobe()
+        protected virtual void ifCloseScobe()
         {
             outStackSize++;
             while (operationStack[operationStackSize - 1].operationName != '(')
@@ -106,7 +116,7 @@ namespace HomeWork2
             isNextSign = false;
         }
 
-        private static void ifBinary(Operation op) // Вот это поебень я сделал
+        protected virtual void ifBinary(Operation op) // Вот это поебень я сделал
         {
             //ShowOpStack();
             //ShowOutStack();
@@ -152,7 +162,7 @@ namespace HomeWork2
         }
 
 
-        private static void CreateStack(in string formula)
+        protected virtual void CreateStack(in string formula, StackCalculator calc)
         {
             operationStack = new Operation[formula.Length];
             outStack = new string[formula.Length];
@@ -173,7 +183,7 @@ namespace HomeWork2
                     isNextSign = false;
                     continue;
                 }
-                ChangeStack(new Operation(ch));
+                ChangeStack(new Operation(ch), calc);
             }
             // перенос оставшегося стека операций в выохдной стек
             //ShowOpStack();
@@ -195,13 +205,14 @@ namespace HomeWork2
 
         public static string DoCallculation(string formula)
         {
-            CreateStack(formula);
+            StackCalculator calc = new StackCalculator(formula);
+            calc.CreateStack(formula, calc);
             int step = 0;
             double firstValue = 0;
             double secondValue = 0;
 
             while (step + 2 < outStackSize)
-            {
+            {   
                 double bar;
                 if (!double.TryParse(outStack[step + 2], out bar))
                 {

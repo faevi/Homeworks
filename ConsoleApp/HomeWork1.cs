@@ -1,4 +1,4 @@
-﻿namespace HomeWork1
+﻿namespace ConsoleApp
 {
     public class Task1
     {

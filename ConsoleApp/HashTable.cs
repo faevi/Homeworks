@@ -1,4 +1,4 @@
-﻿namespace HomeWork2
+﻿namespace ConsoleApp
 {
     public class HashTable<T> : newLinkedList<T> // Task 2
 
@@ -30,7 +30,7 @@
             string stringValue = Convert.ToString(value);
             for (int i = 0; i < Convert.ToString(value).Length; i++)
             {
-                rez += (int)Math.Pow(p, stringValue.Length - 1 - i) * (int)(stringValue[i]);//Подсчет хеш-функции
+                rez += (int)Math.Pow(p, stringValue.Length - 1 - i) * stringValue[i];//Подсчет хеш-функции
             }
             return rez;
         }

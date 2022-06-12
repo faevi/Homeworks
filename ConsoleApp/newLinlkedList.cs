@@ -1,4 +1,4 @@
-﻿namespace HomeWork2
+﻿namespace ConsoleApp
 {
     public class Node<T>
     {
