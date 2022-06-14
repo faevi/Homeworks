@@ -1,7 +1,6 @@
-﻿
-namespace HomeWork2
+﻿namespace HomeWork2
 {
-    class StackCalculator
+    public class StackCalculator
     {
         private static int operationStackSize = 0;
         private static int outStackSize = 0;
@@ -39,14 +38,6 @@ namespace HomeWork2
             }
         }
 
-        //private enum Operation
-        //{
-        //    Add,
-        //    Subtract,
-        //    Multiply,
-        //    Divide
-        //}
-
         protected static double DoOperation(double x, double y, Operation op)
         {
             double result = op.operationName switch
@@ -61,32 +52,31 @@ namespace HomeWork2
 
         protected static void ChangeStack(Operation op, StackCalculator calc)
         {
-            //Console.WriteLine("Im trying to add operation: {0}, outStackSize: {1}, opStack Size: {2}", op.operationName, outStackSize, operationStackSize);
-            //outStackSize++;
             switch (op.operationName)
             {
                 case '(':
-                    calc.ifOpenScobe(op);
+                    calc.IfOpenScobe(op);
                     break;
                 case ')':
-                    calc.ifCloseScobe();
+                    calc.IfCloseScobe();
                     break;
                 case '+':
-                    calc.ifBinary(op);
+                    calc.IfBinary(op);
                     break;
                 case '-':
-                    calc.ifBinary(op);
+                    calc.IfBinary(op);
                     break;
                 case '/':
-                    calc.ifBinary(op);
+                    calc.IfBinary(op);
                     break;
                 case '*':
-                    calc.ifBinary(op);
+                    calc.IfBinary(op);
                     break;
             }
         }
 
-        protected virtual void ifOpenScobe(in Operation ch)
+        // если операция открытой скобки
+        protected virtual void IfOpenScobe(in Operation ch)
         {
             operationStack[operationStackSize] = ch;
             operationStackSize++;
@@ -94,7 +84,8 @@ namespace HomeWork2
             isPreviousOperation = false;
         }
 
-        protected virtual void ifCloseScobe()
+        // если операция закрытой скобки
+        protected virtual void IfCloseScobe()
         {
             outStackSize++;
             while (operationStack[operationStackSize - 1].operationName != '(')
@@ -116,23 +107,28 @@ namespace HomeWork2
             isNextSign = false;
         }
 
-        protected virtual void ifBinary(Operation op) 
+        // Если это бинарная операция
+        protected virtual void IfBinary(Operation op)
         {
-            //ShowOpStack();
-            //ShowOutStack();
+            // если до этого операционный стак был пустой
+            // или предыдущей операцией была скобка
             if (operationStackSize == 0 || operationStack[operationStackSize - 1].operationPriority == 0)
             {
                 operationStack[operationStackSize] = op;
+
                 if (outStackSize != 0 && operationStackSize == 0)
                 {
                     outStackSize--;
                 }
+
                 outStackSize++;
             }
+            // если предыдщая операция была меньшего приоритета
             else if (operationStack[operationStackSize - 1].operationPriority > op.operationPriority)
             {
                 operationStack[operationStackSize] = op;
             }
+            // если большего приоритета
             else
             {
                 operationStackSize--;
@@ -140,7 +136,6 @@ namespace HomeWork2
                 while (operationStack[operationStackSize].operationPriority <= op.operationPriority ||
                     operationStack[operationStackSize].operationPriority != 0)
                 {
-                    //Console.WriteLine("Im on opStack position: {0}, meanwhile outStackPosition: {1}", operationStackSize, outStackSize);
                     outStackSize++;
                     outStack[outStackSize] += operationStack[operationStackSize].operationName;
                     outStackSize++;
@@ -157,11 +152,9 @@ namespace HomeWork2
             isNextSign = false;
             isPreviousOperation = true;
             operationStackSize++;
-            //ShowOpStack();
-            //ShowOutStack();
         }
 
-
+        // Инициализирует стэк калькулятора перед операцией
         protected virtual void CreateStack(in string formula, StackCalculator calc)
         {
             operationStack = new Operation[formula.Length];
@@ -175,34 +168,35 @@ namespace HomeWork2
 
             foreach (char ch in CH) //алгоритм преобразованя из инфиксной нотации в обратную польскую запись
             {
-                //Console.WriteLine("Trying to Add: {0}", ch);
                 int bar;
+
                 if (int.TryParse(ch.ToString(), out bar) || ch == '.' || isNextSign && ch != '(' && ch != ')')
                 {
                     outStack[outStackSize] += ch;
                     isNextSign = false;
                     continue;
                 }
+
                 ChangeStack(new Operation(ch), calc);
             }
+
             // перенос оставшегося стека операций в выохдной стек
-            //ShowOpStack();
-            //ShowOutStack();
             for (int stackNode = operationStackSize; stackNode > 0; --stackNode)
             {
                 outStackSize++;
+
                 if (!isPreviousOperation)
                 {
                     outStackSize--;
                     isPreviousOperation = true;
                 }
+
                 outStack[outStackSize] += operationStack[stackNode - 1].operationName;
             }
             outStackSize++;
-            //ShowOpStack();
-            //ShowOutStack();
         }
 
+        // Само вычисление, проход по постфисной записи с выполнением операций
         public static string DoCallculation(string formula)
         {
             StackCalculator calc = new StackCalculator(formula);
@@ -212,8 +206,9 @@ namespace HomeWork2
             double secondValue = 0;
 
             while (step + 2 < outStackSize)
-            {   
+            {
                 double bar;
+
                 if (!double.TryParse(outStack[step + 2], out bar))
                 {
                     if (double.TryParse(outStack[step], out firstValue)
@@ -224,30 +219,32 @@ namespace HomeWork2
                         outStack[step + 2] = Convert.ToString(DoOperation(firstValue, secondValue, op));
                     }
                 }
+
                 step++;
             }
             return outStack[step + 1];
         }
 
+        // демонстрация постфиксной записи
         public static void ShowOutStack()
         {
             Console.WriteLine("Out Stack with {0} elemnts: ", outStackSize);
+
             for (int step = 0; step < outStackSize; step++)
             {
                 Console.WriteLine(outStack[step] + " ");
             }
-            //Console.WriteLine();
         }
 
+        // демонстрация стэка операций
         public static void ShowOpStack()
         {
             Console.WriteLine("Op Stack with {0} elemnts: ", operationStackSize);
+
             for (int step = 0; step < operationStackSize; step++)
             {
                 Console.WriteLine(operationStack[step].operationName + " ");
             }
-            //Console.WriteLine();
         }
     }
 }
-

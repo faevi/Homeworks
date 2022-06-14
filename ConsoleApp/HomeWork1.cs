@@ -145,12 +145,8 @@
                             (arr[j + 1, columN], arr[j, columN]) = (arr[j, columN], arr[j + 1, columN]);
                         }
                     }
-
                 }
             }
         }
-
-
-
     }
 }

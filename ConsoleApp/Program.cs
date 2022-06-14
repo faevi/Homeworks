@@ -1,5 +1,4 @@
-﻿
-namespace ConsoleApp
+﻿namespace ConsoleApp
 {
     class Program
     {
@@ -100,31 +99,21 @@ namespace ConsoleApp
 
 
             //Task 2
-            
             HashTable<string> table = new HashTable<string>();
-            
+
             for (int i = 0; i < 10; i++)
             {
                 Console.WriteLine("Add in table element: {0}", i);
                 table.Add(Convert.ToString(i));
             }
             table.ShowInfo();
-            Console.WriteLine(table.Find("3")+" "+table.Find("100"));
+            Console.WriteLine(table.Find("3") + " " + table.Find("100"));
             Console.WriteLine(table.Remove("3") + " " + table.Remove("100"));
             Console.WriteLine(table.Find("3") + " " + table.Find("100"));
 
             //Task 3
             Console.WriteLine(StackCalculator.DoCallculation("1+3-(5-10)*4"));
             Console.WriteLine(StackCalculator.DoCallculation("(-1157+24)/17*3"));
-            //StackCalculator.ShowOutStack();
-            //StackCalculator.CreateStack("-1.5+(-3-(5-10)*4)");
-            //StackCalculator.ShowOutStack();
-            //StackCalculator.CreateStack("(1+3)-(5-10)*4");
-            //StackCalculator.ShowOutStack();
-
         }
-
-
-
     }
 }

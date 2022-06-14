@@ -1,5 +1,4 @@
-﻿
-namespace ConsoleApp
+﻿namespace ConsoleApp
 {
     public class HashTable<T> where T : class? // Task 2
 
@@ -12,7 +11,7 @@ namespace ConsoleApp
         public HashTable()
         {
             size = defaultSize;
-            InitializeArray(ref array, size);               
+            InitializeArray(ref array, size);
         }
 
         // Инициализирует массив
@@ -27,8 +26,8 @@ namespace ConsoleApp
 
         public int HashFunction(T? value)
         {
-            int simpleNumber = 31; 
-            int result = 0; 
+            int simpleNumber = 31;
+            int result = 0;
             string stringValue = Convert.ToString(value);
             for (int i = 0; i < Convert.ToString(value).Length; i++)
             {
@@ -37,14 +36,14 @@ namespace ConsoleApp
             return result;
         }
 
-         // увеличивает размер массива до нужного ключа
+        // увеличивает размер массива до нужного ключа
         private void Resize(int newSize)
         {
-            int previousSize = size;       
+            int previousSize = size;
             size = newSize;
             T[][] array2 = new T[size][];
             InitializeArray(ref array2, size);
-        
+
             for (int nodeNumber = 0; nodeNumber < previousSize; nodeNumber++)
             {
                 (array2[nodeNumber], array[nodeNumber]) = (array[nodeNumber], array2[nodeNumber]);
@@ -58,14 +57,14 @@ namespace ConsoleApp
 
             if (position + 1 > size)
             {
-                Resize(position+1);
+                Resize(position + 1);
                 size = position + 1;
             }
 
-            int elementNumber = 0;            
+            int elementNumber = 0;
 
             while (array[position][elementNumber] is not null)
-            {                
+            {
                 if (elementNumber == 15)
                 {
                     throw new StackOverflowException();
@@ -89,7 +88,6 @@ namespace ConsoleApp
 
             int elementNumber = 0;
 
-            Console.WriteLine(array[51][0]);
             while (array[position][elementNumber] == null || !array[position][elementNumber].Equals(value))
             {
                 if (elementNumber == 15)
@@ -101,7 +99,7 @@ namespace ConsoleApp
             }
 
             return elementNumber;
-        } 
+        }
 
         // проверка существования элемента
         public bool Find(T value)
@@ -138,7 +136,7 @@ namespace ConsoleApp
             Console.WriteLine("Current table has:");
             for (int nodeNumber = 0; nodeNumber < size; nodeNumber++)
             {
-                for (int positionInNode =0; positionInNode < defaultSize; positionInNode++)
+                for (int positionInNode = 0; positionInNode < defaultSize; positionInNode++)
                 {
                     if (array[nodeNumber][positionInNode] != null)
                     {
@@ -149,5 +147,3 @@ namespace ConsoleApp
         }
     }
 }
-
-
