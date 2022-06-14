@@ -80,27 +80,38 @@ namespace ConsoleApp
 
 
             //Task 1
-            newLinkedList<int> list = new newLinkedList<int>();
-            
-            for (int i = 0; i < 10; i++)
-            {
-                Console.WriteLine("Add in list element: {0}", i);
-                list.Add(i,i);
-            }
-            
-            list.Add(50, 15);
-            newLinkedList<int>.ShowInfo(list);
+            //NewLinkedList<int> list = new NewLinkedList<int>();
+            //
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    Console.WriteLine("Add in list element: {0}", i);
+            //    list.Add(i,i);
+            //    //NewLinkedList<int>.ShowLinkedList(list);
+            //}
+            //NewLinkedList<int>.ShowLinkedList(list);           
+            //list.Add(50, 5);
+            //NewLinkedList<int>.ShowLinkedList(list);
+            //list.Add(50, 0);
+            //NewLinkedList<int>.ShowLinkedList(list);
+            //list.Add(50, 10);
+            //NewLinkedList<int>.ShowLinkedList(list);
+
+            //list.Add(50, 15);
+
 
             //Task 2
-
+            
             HashTable<string> table = new HashTable<string>();
-
+            
             for (int i = 0; i < 10; i++)
             {
                 Console.WriteLine("Add in table element: {0}", i);
                 table.Add(Convert.ToString(i));
             }
-            HashTable<string>.ShowInfo(table);
+            table.ShowInfo();
+            Console.WriteLine(table.Find("3")+" "+table.Find("100"));
+            Console.WriteLine(table.Remove("3") + " " + table.Remove("100"));
+            Console.WriteLine(table.Find("3") + " " + table.Find("100"));
 
             //Task 3
             Console.WriteLine(StackCalculator.DoCallculation("1+3-(5-10)*4"));

@@ -116,7 +116,7 @@ namespace HomeWork2
             isNextSign = false;
         }
 
-        protected virtual void ifBinary(Operation op) // Вот это поебень я сделал
+        protected virtual void ifBinary(Operation op) 
         {
             //ShowOpStack();
             //ShowOutStack();
