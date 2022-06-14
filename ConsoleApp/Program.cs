@@ -99,6 +99,7 @@
 
 
             //Task 2
+
             HashTable<string> table = new HashTable<string>();
 
             for (int i = 0; i < 10; i++)
@@ -114,6 +115,12 @@
             //Task 3
             Console.WriteLine(StackCalculator.DoCallculation("1+3-(5-10)*4"));
             Console.WriteLine(StackCalculator.DoCallculation("(-1157+24)/17*3"));
+            //StackCalculator.ShowOutStack();
+            //StackCalculator.CreateStack("-1.5+(-3-(5-10)*4)");
+            //StackCalculator.ShowOutStack();
+            //StackCalculator.CreateStack("(1+3)-(5-10)*4");
+            //StackCalculator.ShowOutStack();
+
         }
     }
 }
