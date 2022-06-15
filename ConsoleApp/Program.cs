@@ -100,6 +100,7 @@
 
             //Task 2
 
+           
             HashTable<string> table = new HashTable<string>();
 
             for (int i = 0; i < 10; i++)
