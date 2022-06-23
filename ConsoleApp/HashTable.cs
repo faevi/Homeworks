@@ -1,120 +1,139 @@
-﻿namespace HomeWork2
+﻿namespace ConsoleApp
 {
-    public class HashTable<T> : newLinkedList<T> // Task 2
-
+    public class HashTable<T> where T : class? // Task 2
     {
-        //Т.к. вместо массива у меня мой слепленный связанный список, то рехеш и ресайз не нужен))0))0)
-        //private newLinkedList<T> list = new newLinkedList<T>();
-        //private double rehash_size = 0.75;
-        //private int defaultSize = 8;
+        private const int defaultSize = 16;
+        private int size = 0;
+        private T[][]? array;
 
-        int HashFunction1(T value, int table_size)
+        public HashTable()
         {
+            size = defaultSize;
+            InitializeArray(ref array, size);
+        }
+
+        // Инициализирует массив
+        private void InitializeArray(ref T[][] arr, int initialSize)
+        {
+            arr = new T[initialSize][];
+            for (int step = 0; step < initialSize; step++)
             {
-                return HashFunction(value, table_size, table_size - 1);
+                arr[step] = new T[16];
             }
         }
 
-        int HashFunction2(T value, int table_size)
+        public int HashFunction(T? value)
         {
-            {
-                return HashFunction(value, table_size, table_size + 1);
-            }
-        }
-
-
-        public int HashFunction(T? value, int table_size, int key)
-        {
-            int p = 31; //Простое число
-            int rez = 0; //Результат вычисления
+            int simpleNumber = 31;
+            int result = 0;
             string stringValue = Convert.ToString(value);
             for (int i = 0; i < Convert.ToString(value).Length; i++)
             {
-                rez += (int)Math.Pow(p, stringValue.Length - 1 - i) * (int)(stringValue[i]);//Подсчет хеш-функции
+                result += (int)Math.Pow(simpleNumber, stringValue.Length - 1 - i) * stringValue[i]; //Подсчет хеш-функции
             }
-            return rez;
+            return result;
         }
 
-        public bool Find(T value)
+        // увеличивает размер массива до нужного ключа
+        private void Resize(int newSize)
         {
-            int h1 = HashFunction1(value, nodesCount); // значение, отвечающее за начальную позицию
-            int h2 = HashFunction2(value, nodesCount); // значение, ответственное за "шаг" по таблице
-            int i = 0;
+            int previousSize = size;
+            size = newSize;
+            T[][] array2 = new T[size][];
+            InitializeArray(ref array2, size);
 
-            while (h1 < nodesCount && i < nodesCount)
+            for (int nodeNumber = 0; nodeNumber < previousSize; nodeNumber++)
             {
-                Node<T> temp = GetNode(h1); // Чтобы два раза по листу не бегать в след if
-
-                //Console.WriteLine("temp.field: {0}, temp position: {1}, value: {2}, temp state: {3}", temp.field, h1, value, temp.state);
-                if (temp.field != null && temp.field.Equals(value) && temp.state)
-                {
-                    return true; // такой элемент есть
-                }
-
-                h1 = (h1 + h2) % nodesCount;
-                i++;
-                //Console.WriteLine("h1: {0}, nodesCount: {1}", h1, list.nodesCount);
+                (array2[nodeNumber], array[nodeNumber]) = (array[nodeNumber], array2[nodeNumber]);
             }
-            return false;
+            array = array2;
         }
 
-        public new bool Remove(T value) // потому что в родительском определен метод удаляющий по позиции
+        public void Add(T value)
         {
-            int h1 = HashFunction1(value, nodesCount); // значение, отвечающее за начальную позицию
-            int h2 = HashFunction2(value, nodesCount); // значение, ответственное за "шаг" по таблице
+            int position = HashFunction(value);
 
-            while (h1 < nodesCount)
+            if (position + 1 > size)
             {
-                Node<T> temp = GetNode(h1); // Чтобы два раза по листу не бегать в след if
-
-                if (temp.field!.Equals(value) && temp.state)
-                {
-                    temp.state = false;
-                    emptyCount++;
-                    return true; // такой элемент есть
-                }
-
-                h1 = (h1 + h2) % nodesCount;
+                Resize(position * 2);
+                size = position + 1;
             }
 
-            return false;
-        }
+            int elementNumber = 0;
 
-        public bool Add(T value)
-        {
-            int h1 = HashFunction1(value, nodesCount); // значение, отвечающее за начальную позицию
-            int h2 = HashFunction2(value, nodesCount); // значение, ответственное за "шаг" по таблице
-
-            while (h1 < nodesCount)
+            while (array[position][elementNumber] is not null)
             {
-                Node<T> temp = GetNode(h1); // Чтобы два раза по листу не бегать в след if
-
-                if (!temp.state)
+                if (elementNumber == array[position].Length-1)
                 {
-                    Add(value, h1);
-                    return true; // такой элемент есть
+                    throw new StackOverflowException();
                 }
-
-                h1 = (h1 + h2) % nodesCount;
+                elementNumber++;
             }
 
-            Add(value, h1);
+            array[position][elementNumber] = value;
+        }        
+
+        // проверка существования элемента
+        public bool IsExist(T value)
+        {
+            int position = HashFunction(value);
+
+            if (position > size)
+            {
+                return false;
+            }
+
+            int elementNumber = 0;
+
+            while (array[position][elementNumber] == null || !array[position][elementNumber].Equals(value))
+            {
+                if (elementNumber == array[position].Length-1)
+                {
+                    return false;
+                }
+
+                elementNumber++;
+            }
+
             return true;
         }
 
-        public static void ShowInfo(HashTable<T> table)
+        // удаление элемента
+        public bool Remove(T value) // потому что в родительском определен метод удаляющий по позиции
         {
-            bool isEmpty = table.nodesCount > 0 ? false : true;
-            if (isEmpty)
+            int position = HashFunction(value);
+
+            if (!IsExist(value))
             {
-                Console.WriteLine("The table is empty!");
+                return false;
             }
-            else
+
+            int elementNumber = 0;
+
+            while (!array[position][elementNumber].Equals(value))
+            {               
+                elementNumber++;
+            }
+
+            array[position][elementNumber] = null;
+
+            return true;
+        }
+
+
+        public void ShowInfo()
+        {
+            Console.WriteLine("Current table has:");
+            for (int nodeNumber = 0; nodeNumber < size; nodeNumber++)
             {
-                Console.WriteLine("Current table has {0} elements, {1} elements is real, {2} elements is empty",
-                    table.nodesCount, table.nodesCount - table.emptyCount, table.emptyCount);
+                for (int positionInNode = 0; positionInNode < defaultSize; positionInNode++)
+                {
+                    if (array[nodeNumber][positionInNode] != null)
+                    {
+                        Console.WriteLine("The value {0}, with position {1}", array[nodeNumber][positionInNode], nodeNumber);
+                    }
+                }
             }
-            ShowLinnkedList(table);
         }
     }
 }
