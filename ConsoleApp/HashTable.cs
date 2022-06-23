@@ -63,7 +63,7 @@
 
             while (array[position][elementNumber] is not null)
             {
-                if (elementNumber == 15)
+                if (elementNumber == array[position].Length-1)
                 {
                     throw new StackOverflowException();
                 }
@@ -87,7 +87,7 @@
 
             while (array[position][elementNumber] == null || !array[position][elementNumber].Equals(value))
             {
-                if (elementNumber == 15)
+                if (elementNumber == array[position].Length-1)
                 {
                     return false;
                 }

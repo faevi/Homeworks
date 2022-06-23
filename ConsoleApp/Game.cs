@@ -37,26 +37,21 @@ namespace ConsoleApp
             origRow = Console.CursorTop;  // Пусть карты такие, что 1 1 всегда свободна
             origCol = Console.CursorLeft;
             Console.SetCursorPosition(origCol, origRow);
-            //Console.WriteLine($"Im trying find {origCol} and {origRow}");
             Console.Write("@");
-            //Console.WriteLine($"Im trying find {origCol} and {origRow}");
             eventLoop.Run();
         }
 
         // возвращает элемент карты на интересующей позиции
         protected static char FindElement(int x, int y)
         {
-            //Console.WriteLine($"Im trying find {x} and {y}");
             using (StreamReader reader = new StreamReader(map))
             {
                 string line = reader.ReadLine();
 
                 for (int row = 0; row < y; row++)
                 {
-                    //Console.WriteLine($"Im on a row: {row}, with line: {line}");
                     if (line == null)
                     {
-                        //Console.WriteLine($"{row} + and x: {line}");
                         throw new ArgumentOutOfRangeException();
                     }
                     //Read the next line
@@ -65,7 +60,6 @@ namespace ConsoleApp
 
                 if (x > line.Length)
                 {
-                    //Console.WriteLine($"{line.Length} + and x: {x}");
                     throw new ArgumentOutOfRangeException();
                 }
 
@@ -79,10 +73,8 @@ namespace ConsoleApp
         {
             try
             {
-                //Console.Write($"Im trying {x} and {y}");
                 if (FindElement(origCol + x, origRow + y) != ' ')
-                {
-                    //Console.Write($"The element {FindElement(origCol + x, origRow + y)} ");
+                {                    
                     throw new ArgumentException();
                 }
                 Console.SetCursorPosition(origCol, origRow);
@@ -94,12 +86,10 @@ namespace ConsoleApp
             }   
             catch (ArgumentOutOfRangeException e)
             {
-                //Console.Clear();
                 Console.WriteLine(e.Message);
             }
             catch (ArgumentException e)
             {
-                //Console.Clear();
                 Console.WriteLine(e.Message);
             }
         }
@@ -125,4 +115,3 @@ namespace ConsoleApp
         }
     }
 }
-
