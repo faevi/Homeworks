@@ -1,8 +1,7 @@
-﻿namespace HomeWork1
+﻿namespace ConsoleApp
 {
     public class Task1
     {
-
         public static double Factorial(double numeric) //Task 1
         {
             if (numeric < 0)
@@ -145,7 +144,6 @@
                             (arr[j + 1, columN], arr[j, columN]) = (arr[j, columN], arr[j + 1, columN]);
                         }
                     }
-
                 }
             }
         }
