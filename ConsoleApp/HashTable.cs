@@ -1,9 +1,7 @@
 ﻿namespace ConsoleApp
 {
     public class HashTable<T> where T : class? // Task 2
-
     {
-        //private double rehash_size = 0.75;
         private const int defaultSize = 16;
         private int size = 0;
         private T[][]? array;
@@ -57,7 +55,7 @@
 
             if (position + 1 > size)
             {
-                Resize(position + 1);
+                Resize(position * 2);
                 size = position + 1;
             }
 
@@ -73,17 +71,16 @@
             }
 
             array[position][elementNumber] = value;
-        }
+        }        
 
-        //Укузатель на положение элемента в ноде 
-        private int GetValuePointer(T value)
+        // проверка существования элемента
+        public bool IsExist(T value)
         {
-            int result = -1;
             int position = HashFunction(value);
 
             if (position > size)
             {
-                return result;
+                return false;
             }
 
             int elementNumber = 0;
@@ -92,23 +89,10 @@
             {
                 if (elementNumber == 15)
                 {
-                    return result;
+                    return false;
                 }
 
                 elementNumber++;
-            }
-
-            return elementNumber;
-        }
-
-        // проверка существования элемента
-        public bool Find(T value)
-        {
-            int elementNumber = GetValuePointer(value);
-
-            if (elementNumber == -1)
-            {
-                return false;
             }
 
             return true;
@@ -118,11 +102,17 @@
         public bool Remove(T value) // потому что в родительском определен метод удаляющий по позиции
         {
             int position = HashFunction(value);
-            int elementNumber = GetValuePointer(value);
 
-            if (elementNumber == -1)
+            if (!IsExist(value))
             {
                 return false;
+            }
+
+            int elementNumber = 0;
+
+            while (!array[position][elementNumber].Equals(value))
+            {               
+                elementNumber++;
             }
 
             array[position][elementNumber] = null;

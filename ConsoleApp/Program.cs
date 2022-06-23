@@ -77,6 +77,7 @@
             //Console.WriteLine(table.Find("100"));
             //HashTable<string>.ShowInfo(table);
 
+            //HomeWork2
 
             //Task 1
             //NewLinkedList<int> list = new NewLinkedList<int>();
@@ -100,28 +101,44 @@
 
             //Task 2
 
-           
-            HashTable<string> table = new HashTable<string>();
 
-            for (int i = 0; i < 10; i++)
-            {
-                Console.WriteLine("Add in table element: {0}", i);
-                table.Add(Convert.ToString(i));
-            }
-            table.ShowInfo();
-            Console.WriteLine(table.Find("3") + " " + table.Find("100"));
-            Console.WriteLine(table.Remove("3") + " " + table.Remove("100"));
-            Console.WriteLine(table.Find("3") + " " + table.Find("100"));
-
-            //Task 3
-            Console.WriteLine(StackCalculator.DoCallculation("1+3-(5-10)*4"));
-            Console.WriteLine(StackCalculator.DoCallculation("(-1157+24)/17*3"));
+            //HashTable<string> table = new HashTable<string>();
+            //
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    Console.WriteLine("Add in table element: {0}", i);
+            //    table.Add(Convert.ToString(i));
+            //}
+            //table.ShowInfo();
+            //Console.WriteLine(table.Find("3") + " " + table.Find("100"));
+            //Console.WriteLine(table.Remove("3") + " " + table.Remove("100"));
+            //Console.WriteLine(table.Find("3") + " " + table.Find("100"));
+            //
+            ////Task 3
+            //Console.WriteLine(StackCalculator.DoCallculation("1+3-(5-10)*4"));
+            //Console.WriteLine(StackCalculator.DoCallculation("(-1157+24)/17*3"));
             //StackCalculator.ShowOutStack();
             //StackCalculator.CreateStack("-1.5+(-3-(5-10)*4)");
             //StackCalculator.ShowOutStack();
             //StackCalculator.CreateStack("(1+3)-(5-10)*4");
             //StackCalculator.ShowOutStack();
 
+            //HomeWork 3
+            //Task 1 UniqueList
+
+            //UniqueList<int> uniqueList = new UniqueList<int>();
+            //
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    Console.WriteLine("Add in table element: {0}", i);
+            //    uniqueList.Add(i);
+            //}
+            //uniqueList.ShowUniqueList();
+            //
+            //uniqueList.Add(5);
+            //
+            //uniqueList.ShowUniqueList();
+            Game game = new Game("map.txt");
         }
     }
 }

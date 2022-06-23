@@ -2,7 +2,6 @@
 {
     public class Task1
     {
-
         public static double Factorial(double numeric) //Task 1
         {
             if (numeric < 0)
