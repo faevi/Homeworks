@@ -1,0 +1,67 @@
+﻿<Window x:Class="Calculator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Calculator.ViewModels"
+        mc:Ignorable="d"        
+        Title="Калькулятор" Height="335" Width="325" WindowStyle="SingleBorderWindow">
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
+
+    <Grid x:Name="calculatorPanel" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="LightGray">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.1*"></RowDefinition>
+            <RowDefinition Height="0.2*"></RowDefinition>
+            <RowDefinition  Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <TextBlock Text="{Binding Path=InputCommand}" Grid.Row="0" FontSize="15px" Foreground="White" TextAlignment="Right" VerticalAlignment="Center"></TextBlock>
+        <TextBlock Text="{Binding Path=Result}" Grid.Row="1" FontSize="20px" TextAlignment="Right" VerticalAlignment="Center"></TextBlock>
+        <Grid  x:Name="buttonGrid" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition ></RowDefinition>
+                <RowDefinition ></RowDefinition>
+                <RowDefinition ></RowDefinition>
+                <RowDefinition ></RowDefinition>
+                <RowDefinition ></RowDefinition>
+                <RowDefinition ></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition ></ColumnDefinition>
+                <ColumnDefinition ></ColumnDefinition>
+                <ColumnDefinition ></ColumnDefinition>
+                <ColumnDefinition ></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="percent" Grid.Column="0" Grid.Row="0" Content="%" Command="{Binding PercentCommand}" />
+            <Button x:Name="ce" Grid.Column="1" Grid.Row="0" Content="CE" Command="{Binding CeCommand}"  />
+            <Button x:Name="c" Grid.Column="2" Grid.Row="0" Content="C" Command="{Binding CCommand}" />
+            <Button x:Name="delete" Grid.Column="3" Grid.Row="0" Content="del" Command="{Binding DelCommand}" />
+
+            <Button x:Name="inverse" Grid.Column="0" Grid.Row="1" Content="1/x" Command="{Binding ReverseCommand}"  />
+            <Button x:Name="sqare" Grid.Column="1" Grid.Row="1" Content="x^2" Command="{Binding AddSqrCommand}"  />
+            <Button x:Name="sqrt" Grid.Column="2" Grid.Row="1" Content="sqrt(x)" Command="{Binding AddSqrtCommand}"/>
+            <Button x:Name="divide" Grid.Column="3" Grid.Row="1" Content="/" Command="{Binding AddOperationToInputCommand}" CommandParameter="/" />
+
+            <Button Grid.Column="0" Grid.Row="2" Content="7" Command="{Binding AddNumberToInputCommand}" CommandParameter="7" Background="White" />
+            <Button Grid.Column="1" Grid.Row="2" Content="8" Command="{Binding AddNumberToInputCommand}" CommandParameter="8" Background="White"/>
+            <Button Grid.Column="2" Grid.Row="2" Content="9" Command="{Binding AddNumberToInputCommand}" CommandParameter="9" Background="White" />
+            <Button Grid.Column="3" Grid.Row="2" Content="*" Command="{Binding AddOperationToInputCommand}" CommandParameter="*" />
+
+            <Button Grid.Column="0" Grid.Row="3" Content="4" Command="{Binding AddNumberToInputCommand}" CommandParameter="4" Background="White" />
+            <Button Grid.Column="1" Grid.Row="3" Content="5" Command="{Binding AddNumberToInputCommand}" CommandParameter="5" Background="White"/>
+            <Button Grid.Column="2" Grid.Row="3" Content="6" Command="{Binding AddNumberToInputCommand}" CommandParameter="6" Background="White" />
+            <Button Grid.Column="3" Grid.Row="3" Content="-" Command="{Binding AddOperationToInputCommand}" CommandParameter="-" />
+
+            <Button Grid.Column="0" Grid.Row="4" Content="1" Command="{Binding AddNumberToInputCommand}" CommandParameter="1" Background="White" />
+            <Button Grid.Column="1" Grid.Row="4" Content="2" Command="{Binding AddNumberToInputCommand}" CommandParameter="2" Background="White"/>
+            <Button Grid.Column="2" Grid.Row="4" Content="3" Command="{Binding AddNumberToInputCommand}" CommandParameter="3" Background="White" />
+            <Button Grid.Column="3" Grid.Row="4" Content="+" Command="{Binding AddOperationToInputCommand}" CommandParameter="+" />
+
+            <Button Grid.Column="0" Grid.Row="5" Content="+/-" Command="{Binding AddOperationToInputCommand}" CommandParameter="*(-1)" Background="White" />
+            <Button Grid.Column="1" Grid.Row="5" Content="0" Command="{Binding AddNumberToInputCommand}" CommandParameter="0" Background="White"/>
+            <Button Grid.Column="2" Grid.Row="5" Content="," Command="{Binding AddNumberToInputCommand}" CommandParameter="," Background="White" />
+            <Button Grid.Column="3"  Grid.Row="5" Command="{Binding DoCallculationCommand}" Content="=" Background="Gray" />
+        </Grid>
+    </Grid>
+</Window>
