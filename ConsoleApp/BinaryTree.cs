@@ -5,17 +5,23 @@
         public class Node<T>
         {
             private T _value;
+            private int _key;
             public T Value
             {
                 get => _value;
                 set
                 {
                     _value = value;
-                    key = value!.GetHashCode();
                 }
             }
-
-            public int key;
+            public int Key
+            {
+                get => _key;
+                set
+                {
+                    _key = value;
+                }
+            }
             public Node<T>? LeftElement { get; set; }
             public Node<T>? RightElement { get; set; }
 
@@ -24,199 +30,226 @@
 
             }
 
-            public Node(T value)
+            public Node(T value, int key)
             {
                 if (value is null)
                 {
                     throw new ArgumentNullException(nameof(value));
                 }
 
-                Value = value!;
+                Value = value;
+                Key = key;
+            }
+
+            public Node(Node<T> node)
+            {
+                Value = node.Value;
+                Key = node.Key;
+                if (node.LeftElement is not null)
+                {
+                    LeftElement = node.LeftElement;
+                }
+
+                if (node.RightElement is not null)
+                {
+                    RightElement = node.RightElement;
+                }
             }
         }
 
-        public Node<T>? _parrentNode;
+        protected Node<T>? _rootNode;
 
-        public BinaryTree(Node<T>? parrentNode)
+        public BinaryTree(Node<T>? rootNode)
         {
-            _parrentNode =  parrentNode;          
+            _rootNode = rootNode;          
         }
 
         public BinaryTree()
         {
-            _parrentNode=null;
+            _rootNode=null;
         }        
 
-        public ref Node<T> Find(T value)
+        public virtual Node<T> Find(T value, int key)
         {
-            int valueKey = value.GetHashCode();
+            Node<T> tempNode = _rootNode;
 
-            if (this._parrentNode == null)
+            while(tempNode.Key != key)
             {
-                throw new KeyNotFoundException($"No element in tree with {value} value");
-            } 
-            else if (this._parrentNode.key == valueKey)
-            {
-                return ref this._parrentNode!;
+                if (tempNode == null)
+                {
+                    throw new KeyNotFoundException($"No element in tree with {value} value");
+                }
+                else if (tempNode.Key == key)
+                {
+                    return tempNode;
+                }
+
+                if (key > tempNode.Key)
+                {   
+                   tempNode = tempNode.RightElement;
+                }
+                else
+                {
+                    tempNode = tempNode.LeftElement;
+                }
+
             }
 
-            BinaryTree<T> subBinaryTree = new BinaryTree<T>();
-            
-            if (valueKey > this._parrentNode.key)
-            {
-                subBinaryTree._parrentNode = this._parrentNode.RightElement;
-            } 
-            else
-            {
-                subBinaryTree._parrentNode = this._parrentNode.LeftElement;
-            }
-            return ref subBinaryTree.Find(value);
+            return tempNode;
         }
 
-        public void Insert(T value)
-        {    
-            if (_parrentNode == null)
+        public virtual void Insert(T value, int key)
+        {
+            if(_rootNode is null)
             {
-                _parrentNode = new Node<T>(value);
+                _rootNode = new Node<T>(value, key);
                 return;
             }
 
-            int valueKey = value.GetHashCode();
-            BinaryTree<T> tempTree;
+            Node<T> tempNode = _rootNode;
 
-            if (valueKey > _parrentNode.key)
+            while (tempNode.Key != key)
             {
-                tempTree = new BinaryTree<T>(_parrentNode.RightElement);
-                _parrentNode.RightElement = tempTree._parrentNode;
-                if (tempTree._parrentNode == null)
+                if (key > tempNode.Key)
                 {
-                    _parrentNode.RightElement = new Node<T>(value);
-                    return ;
+                    if (tempNode.RightElement == null)
+                    {
+                        tempNode.RightElement = new Node<T>(value, key);
+                        return;
+                    }
+
+                    tempNode = tempNode.RightElement!;                    
                 }
-            }
-            else if (valueKey < _parrentNode.key)
-            {
-                tempTree = new BinaryTree<T>(_parrentNode.LeftElement);
-                _parrentNode.LeftElement = tempTree._parrentNode;
-                if (tempTree._parrentNode == null)
+                else if (key < tempNode.Key)
                 {
-                    _parrentNode.LeftElement = new Node<T>(value);
+                    if (tempNode.LeftElement == null)
+                    {
+                        tempNode.LeftElement = new Node<T>(value, key);
+                        return;
+                    }
+
+                    tempNode = tempNode.LeftElement!;
+                }
+                else
+                {
+                    tempNode.Value = value;
                     return;
                 }
             }
-            else
-            {
-                _parrentNode.Value = value;
-                return;
-            }
-            
-            tempTree.Insert(value);
         }
-
-        public bool Remove(T value)
+        
+        public virtual bool Remove(int key)
         {
-            if (this._parrentNode == null)
-            {
-                return false;
-            }
+            Node<T> tempNode = _rootNode;
+            Node<T> prevTempNode = new Node<T>();
+            bool isPrevNodeLeft = false;
 
-            bool isRemoved;
-            int valueKey = value.GetHashCode();
-            BinaryTree<T> tempTree;
-
-            if (valueKey > this._parrentNode.key)
+            while (tempNode.Key != key)
             {
-                tempTree = new BinaryTree<T>(_parrentNode.RightElement);
-                
-                if (tempTree._parrentNode == null)
+                prevTempNode = tempNode;
+
+                if (key > tempNode.Key)
                 {
-                    return false;
-                }
+                    isPrevNodeLeft = false;
+                    if (tempNode.RightElement == null)
+                    {
+                        return false;
+                    }
 
-                isRemoved = tempTree.Remove(value);
-                _parrentNode.RightElement = tempTree._parrentNode;
-                return isRemoved;
-            }
-            else if (valueKey < this._parrentNode.key)
-            {
-                tempTree = new BinaryTree<T>(_parrentNode.LeftElement);
-                
-                if (tempTree._parrentNode == null)
+                    tempNode = tempNode.RightElement;
+                }
+                else if (key < tempNode.Key)
                 {
-                    return false;
-                }
+                    isPrevNodeLeft = true;
 
-                isRemoved = tempTree.Remove(value);
-                _parrentNode.LeftElement = tempTree._parrentNode;
-                return isRemoved;
+                    if (tempNode.LeftElement == null)
+                    {
+                        return false;
+                    }
+
+                    tempNode = tempNode.LeftElement;
+                }
+            } // конец while
+
+            if (tempNode.LeftElement is null && tempNode.RightElement is null)
+            {
+                tempNode = null;
+
+                if (isPrevNodeLeft)
+                {
+                    prevTempNode.LeftElement = null;
+                } 
+                else
+                {
+                    prevTempNode.RightElement = null;
+                }
+                
+                return true;
+            }
+            else if (tempNode.LeftElement is null)
+            {
+                tempNode = new Node<T>(tempNode.RightElement);
+                return true;
+            }
+            else if (tempNode.RightElement is null)
+            {
+                tempNode = new Node<T>(tempNode.LeftElement);
+                return true;
             }
             else
             {
-                if (_parrentNode.LeftElement is null && _parrentNode.RightElement is null)
+                if (tempNode.RightElement.LeftElement is null)
                 {
-                    _parrentNode = null;
-                    return true;
-                } 
-                else if (_parrentNode.LeftElement is null)
-                {                    
-                    _parrentNode = _parrentNode.RightElement;
-                    return true;
-                }
-                else if (_parrentNode.RightElement is null)
-                {
-                    _parrentNode = _parrentNode.LeftElement;
+                    tempNode.Value = tempNode.RightElement.Value;
+                    tempNode.Key = tempNode.RightElement.Key;
+                    tempNode.RightElement = tempNode.RightElement.RightElement;
                     return true;
                 }
                 else
                 {
-                    if (_parrentNode.RightElement.LeftElement is null)
-                    {
-                        _parrentNode.Value =_parrentNode.RightElement.Value;
-                        _parrentNode.RightElement = _parrentNode.RightElement.RightElement;
-                        return true;
-                    }
-                    else
-                    {
-                        tempTree = new BinaryTree<T>(_parrentNode.RightElement);
+                    Node<T> secondTempNode = tempNode.RightElement;
 
-                        while (tempTree._parrentNode.LeftElement is not null)
-                        {
-                            tempTree._parrentNode = tempTree._parrentNode.LeftElement;
-                        }
-
-                        this._parrentNode.Value = tempTree._parrentNode.Value;
-                        return tempTree.Remove(tempTree._parrentNode.Value);                        
+                    while (secondTempNode.LeftElement is not null)
+                    {
+                        secondTempNode = secondTempNode.LeftElement;
                     }
+
+                    int tempKey  = secondTempNode.Key;
+                    tempNode.Value = secondTempNode.Value;
+                    Remove(tempKey);
+                    tempNode.Key = tempKey;
+                    return true;
                 }
             }
         }
 
-        public void PrintInfix()
+        public virtual void PrintInfix()
         {
-            if (this._parrentNode is null)
+            if (this._rootNode is null)
             {
                 return;
             }
 
-            BinaryTree<T> subLeftTree = new BinaryTree<T>(this._parrentNode.LeftElement);
+            BinaryTree<T> subLeftTree = new BinaryTree<T>(this._rootNode.LeftElement);
             subLeftTree.PrintInfix();
-            Console.WriteLine($"{this._parrentNode.Value} int tree");
-            BinaryTree<T> subRightTree = new BinaryTree<T>(this._parrentNode.RightElement);
+            Console.WriteLine($"{this._rootNode.Value} in tree");
+            BinaryTree<T> subRightTree = new BinaryTree<T>(this._rootNode.RightElement);
             subRightTree.PrintInfix();
         }
 
-        public void PrintPostfix()
+        public virtual void PrintPostfix()
         {
-            if (this._parrentNode is null)
+            if (this._rootNode is null)
             {
                 return;
             }
 
-            BinaryTree<T> subRightTree = new BinaryTree<T>(this._parrentNode.RightElement);
+            BinaryTree<T> subRightTree = new BinaryTree<T>(this._rootNode.RightElement);
             subRightTree.PrintPostfix();
-            Console.WriteLine($"{this._parrentNode.Value} int tree");
-            BinaryTree<T> subLeftTree = new BinaryTree<T>(this._parrentNode.LeftElement);
+            Console.WriteLine($"{this._rootNode.Value} in tree");
+            BinaryTree<T> subLeftTree = new BinaryTree<T>(this._rootNode.LeftElement);
             subLeftTree.PrintPostfix(); 
         }
+        
     }
 }
