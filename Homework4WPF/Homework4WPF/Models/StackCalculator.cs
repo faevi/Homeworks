@@ -1,4 +1,6 @@
-﻿namespace HomeWork2
+﻿using System;
+
+namespace HomeWork2
 {
     public class StackCalculator
     {
@@ -8,8 +10,8 @@
         private string[] _outStack;
         private bool _isNextSign = true;
         private bool _isPreviousOperation = false;
+        private int numOfOperations = 0;
 
-        
         public StackCalculator(string formula)
         {
             _operationStackSize = 0;
@@ -20,7 +22,6 @@
             _outStack = new string[formula.Length];
         }
 
-
         protected struct Operation
         {
             public char OperationName { get; set; }
@@ -30,10 +31,11 @@
                 this.OperationName = name;
                 this.OperationPriority = name switch
                 {
-                    '/' => 1,
-                    '*' => 1,
-                    '+' => 2,
-                    '-' => 2,
+                    '/' => 2,
+                    '*' => 2,
+                    '^' => 1,
+                    '+' => 3,
+                    '-' => 3,
                     '(' => 0,
                     ')' => 0
                 };
@@ -46,6 +48,7 @@
             {
                 '/' => x / y,
                 '*' => x * y,
+                '^' => Math.Pow(x,y),
                 '+' => x + y,
                 '-' => x - y
             };
@@ -63,6 +66,9 @@
                     IfCloseScobe();
                     break;
                 case '+':
+                    IfBinary(op);
+                    break;
+                case '^':
                     IfBinary(op);
                     break;
                 case '-':
@@ -98,7 +104,6 @@
 
                 if (_operationStackSize - 1 == 0)
                 {
-                    Console.WriteLine("Wrong formula format!");
                     return;
                 }
 
@@ -172,13 +177,13 @@
             {
                 int bar;
 
-                if (int.TryParse(ch.ToString(), out bar) || ch == '.' || _isNextSign && ch != '(' && ch != ')')
+                if (int.TryParse(ch.ToString(), out bar) || ch == ',' || _isNextSign && ch != '(' && ch != ')')
                 {
                     _outStack[_outStackSize] += ch;
                     _isNextSign = false;
                     continue;
                 }
-
+                numOfOperations++;
                 ChangeStack(new Operation(ch));
             }
 
@@ -202,11 +207,15 @@
         public string DoCallculation(string formula)
         {
             CreateStack(formula);
+
+            if(numOfOperations == 0)
+            {
+                return formula;
+            }
+
             int step = 0;
             double firstValue = 0;
             double secondValue = 0;
-            Console.WriteLine(ShowOpStack);
-            Console.WriteLine(ShowOutStack);
 
             while (step + 2 < _outStackSize)
             {
