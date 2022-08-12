@@ -138,7 +138,7 @@ namespace ConsoleApp
         }   
         
 
-        public override bool Remove(int key)
+        public override bool TryRemove(int key)
         {
             if (_rootNode == null)
             {
@@ -256,7 +256,7 @@ namespace ConsoleApp
 
                     int tempKey = secondTempNode.Key;
                     tempNode.Value = secondTempNode.Value;
-                    Remove(tempKey);
+                    TryRemove(tempKey);
                     tempNode.Key = tempKey;
                     return true;
                 }

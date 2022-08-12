@@ -2,7 +2,7 @@
 {
     public class BinaryTree<T>
     {
-        public class Node<T>
+        protected class Node<T>
         {
             private T _value;
             private int _key;
@@ -45,21 +45,14 @@
             {
                 Value = node.Value;
                 Key = node.Key;
-                if (node.LeftElement is not null)
-                {
-                    LeftElement = node.LeftElement;
-                }
-
-                if (node.RightElement is not null)
-                {
-                    RightElement = node.RightElement;
-                }
+                LeftElement = node.LeftElement;
+                RightElement = node.RightElement;
             }
         }
 
         protected Node<T>? _rootNode;
 
-        public BinaryTree(Node<T>? rootNode)
+        private BinaryTree(Node<T>? rootNode)
         {
             _rootNode = rootNode;          
         }
@@ -67,9 +60,10 @@
         public BinaryTree()
         {
             _rootNode=null;
-        }        
+        }
 
-        public virtual Node<T> Find(T value, int key)
+        public T Find(int key) => FindNode(key).Value;
+        private Node<T> FindNode(int key)
         {
             Node<T> tempNode = _rootNode;
 
@@ -77,7 +71,7 @@
             {
                 if (tempNode == null)
                 {
-                    throw new KeyNotFoundException($"No element in tree with {value} value");
+                    throw new KeyNotFoundException($"No element in tree with {key} key");
                 }
                 else if (tempNode.Key == key)
                 {
@@ -138,7 +132,7 @@
             }
         }
         
-        public virtual bool Remove(int key)
+        public virtual bool TryRemove(int key)
         {
             Node<T> tempNode = _rootNode;
             Node<T> prevTempNode = new Node<T>();
@@ -216,7 +210,7 @@
 
                     int tempKey  = secondTempNode.Key;
                     tempNode.Value = secondTempNode.Value;
-                    Remove(tempKey);
+                    TryRemove(tempKey);
                     tempNode.Key = tempKey;
                     return true;
                 }

@@ -10,7 +10,7 @@ namespace ConsoleAppTests
         {
             AVLTree tree = new AVLTree();
             tree.Insert("phone",10);
-            Assert.AreEqual("phone", tree.Find(10).Value);
+            Assert.AreEqual("phone", tree.Find(10));
         }
 
 
@@ -24,11 +24,11 @@ namespace ConsoleAppTests
             tree.Insert("hand", 40);
             tree.Insert("leg", 50);
             tree.PrintInfix();
-            Assert.AreEqual("phone", tree.Find(10).Value);
-            Assert.AreEqual("cat", tree.Find(20).Value);
-            Assert.AreEqual("dog", tree.Find(30).Value);
-            Assert.AreEqual("hand", tree.Find(40).Value);
-            Assert.AreEqual("leg", tree.Find(50).Value);
+            Assert.AreEqual("phone", tree.Find(10));
+            Assert.AreEqual("cat", tree.Find(20));
+            Assert.AreEqual("dog", tree.Find(30));
+            Assert.AreEqual("hand", tree.Find(40));
+            Assert.AreEqual("leg", tree.Find(50));
         }
 
         [TestMethod]
@@ -38,9 +38,9 @@ namespace ConsoleAppTests
             tree.Insert("phone", 10);
             tree.Insert("cat", 20);
             tree.Insert("dog", 15);
-            Assert.AreEqual("phone", tree.Find(10).Value);
-            Assert.AreEqual("cat", tree.Find(20).Value);
-            Assert.AreEqual("dog", tree.Find(15).Value);
+            Assert.AreEqual("phone", tree.Find(10));
+            Assert.AreEqual("cat", tree.Find(20));
+            Assert.AreEqual("dog", tree.Find(15));
         }
 
         [TestMethod]
@@ -51,9 +51,9 @@ namespace ConsoleAppTests
             tree.Insert("cat", 5);
             tree.Insert("dog", 7);
             tree.PrintInfix();
-            Assert.AreEqual("phone", tree.Find(10).Value);
-            Assert.AreEqual("cat", tree.Find(5).Value);
-            Assert.AreEqual("dog", tree.Find(7).Value);
+            Assert.AreEqual("phone", tree.Find(10));
+            Assert.AreEqual("cat", tree.Find(5));
+            Assert.AreEqual("dog", tree.Find(7));
         }
 
         [TestMethod]
@@ -71,11 +71,11 @@ namespace ConsoleAppTests
             tree.Insert("table", 28);
             tree.Insert("silence", 395);
             tree.PrintInfix();
-            Assert.AreEqual("phone", tree.Find( 10).Value);
-            Assert.AreEqual("fish", tree.Find( 15).Value);
-            Assert.AreEqual("dog", tree.Find( 20).Value);
-            Assert.AreEqual("cat", tree.Find( 25).Value);
-            Assert.AreEqual("civilization", tree.Find(24).Value);
+            Assert.AreEqual("phone", tree.Find( 10));
+            Assert.AreEqual("fish", tree.Find( 15));
+            Assert.AreEqual("dog", tree.Find( 20));
+            Assert.AreEqual("cat", tree.Find( 25));
+            Assert.AreEqual("civilization", tree.Find(24));
         }
 
         [TestMethod]
@@ -88,10 +88,10 @@ namespace ConsoleAppTests
             tree.Insert("cat",50);
             tree.Insert("civilization",55);
             tree.PrintInfix();
-            Console.WriteLine($"Dog value {tree.Find(40).Value}");
-            Assert.IsTrue(tree.Remove(55));
-            Assert.IsTrue(tree.Remove(40));
-            Assert.IsTrue(tree.Remove(10));
+            Console.WriteLine($"Dog value {tree.Find(40)}");
+            Assert.IsTrue(tree.TryRemove(55));
+            Assert.IsTrue(tree.TryRemove(40));
+            Assert.IsTrue(tree.TryRemove(10));
             Console.WriteLine("all removed");
             tree.PrintInfix();
         }
@@ -113,14 +113,14 @@ namespace ConsoleAppTests
             tree.Insert("silence", 395);
             
             Console.WriteLine("Lets start");
-            Assert.IsTrue(tree.Remove(395));
+            Assert.IsTrue(tree.TryRemove(395));
             tree.PrintInfix();
-            Assert.IsTrue(tree.Remove(74));
+            Assert.IsTrue(tree.TryRemove(74));
             tree.PrintInfix();
-            Assert.IsTrue(tree.Remove(20));
+            Assert.IsTrue(tree.TryRemove(20));
             tree.PrintInfix();
-            Assert.IsTrue(tree.Remove(25));
-            Assert.IsTrue(tree.Remove(49));
+            Assert.IsTrue(tree.TryRemove(25));
+            Assert.IsTrue(tree.TryRemove(49));
             
         }
     }
