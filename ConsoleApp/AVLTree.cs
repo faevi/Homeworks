@@ -9,7 +9,7 @@ namespace ConsoleApp
     public class AVLTree : BinaryTree<string>
     {
         
-        public class AVLNode : Node<string>
+        protected class AVLNode : Node<string>
         {
             internal int heightDiff = 0;
             public new AVLNode? LeftElement { get; set; }
@@ -40,18 +40,18 @@ namespace ConsoleApp
             }
         }
 
-        public new AVLNode? _rootNode;
+        private AVLNode? _rootNode;
 
         public AVLTree()
         {
 
         }
-        public AVLTree(AVLNode? rootNode)
+        private AVLTree(AVLNode? rootNode)
         {
             _rootNode = rootNode;
         }       
 
-        public AVLNode Find(int key)
+        private AVLNode Find(int key)
         {
             AVLNode tempNode = _rootNode;
 

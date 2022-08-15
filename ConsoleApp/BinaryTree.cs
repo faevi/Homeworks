@@ -1,4 +1,6 @@
-﻿namespace ConsoleApp
+﻿using System.Collections;
+
+namespace ConsoleApp
 {
     public class BinaryTree<T>
     {
@@ -51,10 +53,13 @@
         }
 
         protected Node<T>? _rootNode;
+        protected int _nodesCount = 0;
+
+        public bool IsReadOnly => false;
 
         private BinaryTree(Node<T>? rootNode)
         {
-            _rootNode = rootNode;          
+            _rootNode = rootNode;
         }
 
         public BinaryTree()
@@ -63,11 +68,12 @@
         }
 
         public T Find(int key) => FindNode(key).Value;
+
         private Node<T> FindNode(int key)
         {
             Node<T> tempNode = _rootNode;
 
-            while(tempNode.Key != key)
+            while (tempNode.Key != key)
             {
                 if (tempNode == null)
                 {
@@ -79,8 +85,8 @@
                 }
 
                 if (key > tempNode.Key)
-                {   
-                   tempNode = tempNode.RightElement;
+                {
+                    tempNode = tempNode.RightElement;
                 }
                 else
                 {
@@ -94,7 +100,7 @@
 
         public virtual void Insert(T value, int key)
         {
-            if(_rootNode is null)
+            if (_rootNode is null)
             {
                 _rootNode = new Node<T>(value, key);
                 return;
@@ -109,16 +115,18 @@
                     if (tempNode.RightElement == null)
                     {
                         tempNode.RightElement = new Node<T>(value, key);
+                        _nodesCount++;
                         return;
                     }
 
-                    tempNode = tempNode.RightElement!;                    
+                    tempNode = tempNode.RightElement!;
                 }
                 else if (key < tempNode.Key)
                 {
                     if (tempNode.LeftElement == null)
                     {
                         tempNode.LeftElement = new Node<T>(value, key);
+                        _nodesCount++;
                         return;
                     }
 
@@ -131,7 +139,7 @@
                 }
             }
         }
-        
+
         public virtual bool TryRemove(int key)
         {
             Node<T> tempNode = _rootNode;
@@ -163,7 +171,7 @@
 
                     tempNode = tempNode.LeftElement;
                 }
-            } // конец while
+            }
 
             if (tempNode.LeftElement is null && tempNode.RightElement is null)
             {
@@ -172,22 +180,25 @@
                 if (isPrevNodeLeft)
                 {
                     prevTempNode.LeftElement = null;
-                } 
+                }
                 else
                 {
                     prevTempNode.RightElement = null;
                 }
-                
+
+                _nodesCount--;
                 return true;
             }
             else if (tempNode.LeftElement is null)
             {
                 tempNode = new Node<T>(tempNode.RightElement);
+                _nodesCount--;
                 return true;
             }
             else if (tempNode.RightElement is null)
             {
                 tempNode = new Node<T>(tempNode.LeftElement);
+                _nodesCount--;
                 return true;
             }
             else
@@ -197,6 +208,7 @@
                     tempNode.Value = tempNode.RightElement.Value;
                     tempNode.Key = tempNode.RightElement.Key;
                     tempNode.RightElement = tempNode.RightElement.RightElement;
+                    _nodesCount--;
                     return true;
                 }
                 else
@@ -208,10 +220,11 @@
                         secondTempNode = secondTempNode.LeftElement;
                     }
 
-                    int tempKey  = secondTempNode.Key;
+                    int tempKey = secondTempNode.Key;
                     tempNode.Value = secondTempNode.Value;
                     TryRemove(tempKey);
                     tempNode.Key = tempKey;
+                    _nodesCount--;
                     return true;
                 }
             }
@@ -242,8 +255,13 @@
             subRightTree.PrintPostfix();
             Console.WriteLine($"{this._rootNode.Value} in tree");
             BinaryTree<T> subLeftTree = new BinaryTree<T>(this._rootNode.LeftElement);
-            subLeftTree.PrintPostfix(); 
+            subLeftTree.PrintPostfix();
         }
-        
+
+        public bool Add(T item)
+        {
+            Insert(item, item.GetHashCode());
+            return true;
+        }
     }
 }

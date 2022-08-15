@@ -1,4 +1,6 @@
-﻿namespace ConsoleApp
+﻿using System.Collections;
+
+namespace ConsoleApp
 {
     //сам связанный список
     public class NewLinkedList<T> : IList<T>
@@ -22,6 +24,20 @@
             _begin = null;
         }
         public virtual int Count => nodesCount;
+
+        bool ICollection<T>.IsReadOnly
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        T IList<T>.this[int index] 
+        {
+            get => GetValue(index); 
+            set => Insert(index,value); 
+        }
 
         public virtual bool Contains(T value)
         {
@@ -90,7 +106,6 @@
                     newNode.NextElement = temp;
                 }
                 _begin = newNode;
-
             }
             else if (IsNodeExist(nodeNumber)) // если нода с таким номер существует
             {
@@ -192,14 +207,13 @@
             }
         }
 
-        public virtual bool RemoveAt(int nodeNumber)
+        public virtual void RemoveAt(int nodeNumber)
         {
             if (nodeNumber == nodesCount - 1) // елси элемент последний
             {
                 Node<T> temp = GetNodeByNumber(nodeNumber - 1);
                 temp.NextElement = null;
                 nodesCount--;
-                return true;
             }
             else if (IsNodeExist(nodeNumber)) // если элемент есть в списке
             {
@@ -207,15 +221,13 @@
                 {
                     _begin = _begin.NextElement;
                     nodesCount--;
-                    return true;
+                    return;
                 }
 
                 Node<T> temp = GetNodeByNumber(nodeNumber - 1);
                 temp.NextElement = temp.NextElement.NextElement;
                 nodesCount--;
-                return true;
             }
-            return false;
         }
 
         public static void ShowLinkedList(NewLinkedList<T> list) // Вывод всех нод листа
@@ -251,5 +263,18 @@
                 Console.WriteLine("Current list has {0} elements: ", list.nodesCount);
             }
         }
-    }
+
+        void ICollection<T>.CopyTo(T[] array, int arrayIndex)
+        {
+            foreach (T item in this)
+            {
+                array[arrayIndex] = item;
+                arrayIndex++;
+            }            
+        }
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() => new NewLinkedListEnumerator<T>(this);
+
+        IEnumerator IEnumerable.GetEnumerator() => new NewLinkedListEnumerator<T>(this);
+    }    
 }
