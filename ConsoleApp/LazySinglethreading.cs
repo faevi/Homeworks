@@ -1,6 +1,6 @@
 ﻿namespace ConsoleApp
 {
-    internal class LazySinglethreading<T> : ILazy<T>
+    public class LazySinglethreading<T> : ILazy<T>
     {
         private T _value;
         private bool _valueExist = false;
