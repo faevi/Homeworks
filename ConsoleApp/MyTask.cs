@@ -6,11 +6,12 @@ namespace ConsoleApp
     {
         private Func<TResult> _function;
         private TResult _result;
-        private ManualResetEvent _waitHandle;
+        private ManualResetEvent _waitHandle = new ManualResetEvent(false);
         private MyThreadPool _threadPool;
         private Queue<Action> _taskQueue;
         private bool _isComplete = false;
-        private object locker;
+        private object locker = new object();
+
         public MyTask(Func<TResult> function, MyThreadPool threadPool)
         {
             _threadPool = threadPool;
@@ -68,7 +69,7 @@ namespace ConsoleApp
             {
                 _taskQueue.Enqueue(() => newTask.DoTask());
             }
-
+    
             return newTask;            
         }
     }
