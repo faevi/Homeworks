@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using WebApi2.Models;
+using WebApi2.Context;
 
 #nullable disable
 
 namespace WebApi2.Migrations
 {
     [DbContext(typeof(UsersContext))]
-    [Migration("20221016124133_withStuffWithInitial")]
-    partial class withStuffWithInitial
+    [Migration("20221018174914_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -39,6 +39,13 @@ namespace WebApi2.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CategorySet");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CategoryName = "Valenki"
+                        });
                 });
 
             modelBuilder.Entity("WebApi2.Models.Order", b =>
@@ -125,6 +132,48 @@ namespace WebApi2.Migrations
                     b.HasIndex("OrderId");
 
                     b.ToTable("StuffSet");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Brand = "Nike",
+                            Category_Id = 1,
+                            Count = 100,
+                            Model = "L",
+                            Price = 1000m,
+                            Seria = "1.0"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Brand = "Nike",
+                            Category_Id = 1,
+                            Count = 100,
+                            Model = "M",
+                            Price = 1000m,
+                            Seria = "1.0"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Brand = "Supremme",
+                            Category_Id = 1,
+                            Count = 100,
+                            Model = "M",
+                            Price = 10000m,
+                            Seria = "1.0"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Brand = "Supremme",
+                            Category_Id = 1,
+                            Count = 100,
+                            Model = "XL",
+                            Price = 10000m,
+                            Seria = "2.0"
+                        });
                 });
 
             modelBuilder.Entity("WebApi2.Models.User", b =>
@@ -177,7 +226,7 @@ namespace WebApi2.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ValeuSet");
+                    b.ToTable("ValueSet");
                 });
 
             modelBuilder.Entity("WebApi2.Models.Stuff", b =>

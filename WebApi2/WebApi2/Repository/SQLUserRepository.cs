@@ -1,15 +1,12 @@
-﻿using System;
-using WebApi2.Models;
+﻿using WebApi2.Models;
+using WebApi2.Context;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 using System.Security.Principal;
 
 namespace WebApi2.Repository
@@ -20,7 +17,7 @@ namespace WebApi2.Repository
 
         public SQLUserRepository(UsersContext db)
 		{
-            this._db = db;
+            _db = db;
         }
 
         public IEnumerable<User> GetList()
@@ -43,14 +40,12 @@ namespace WebApi2.Repository
             return await _db.LoginUsers.FindAsync(id);
         }
 
-        public async Task<User> GetItemWithIncludeRoleAsync(IUser user)
+        public async Task<User> GetItemAsync(User user)
         {
-                return await _db.LoginUsers
-                        .Include(u => u.Role)
-                        .FirstOrDefaultAsync(u => u.Username == user.Username && u.Password == user.Password); 
+                return await _db.LoginUsers.FirstOrDefaultAsync(u => u.Username == user.Username && u.Password == user.Password); 
         }
 
-        public User GetItem(IUser user)
+        public User GetItem(User user)
         {
 
             return  _db.LoginUsers
@@ -79,19 +74,19 @@ namespace WebApi2.Repository
             _db.Entry(user).State = EntityState.Modified;
         }
 
-        public bool TryChangeUserByAdmin(string user, User newUser)
+        public async Task<bool> TryChangeUserByAdminAsync(string user, User newUser)
         {
             if (IsNameAlreadyExist(newUser.Username))
             {
                 throw new ArgumentException("Username already exist!");
             }
 
-            User tempUser = _db.LoginUsers.FirstOrDefault(u => u.Username == user);
+            User tempUser = await _db.LoginUsers.FirstOrDefaultAsync(u => u.Username == user);
 
             if (tempUser is not null)
             {
                 ChangeData(tempUser, newUser);
-                Save();
+                await _db.SaveChangesAsync();
                 return true;
             }
 
@@ -103,14 +98,14 @@ namespace WebApi2.Repository
             return _db.LoginUsers.FirstOrDefault(u => u.Username == username) == null ? false : true;
         }
 
-        public void ChangeUserInfo (string username, string password, ClaimsPrincipal claimsPrincipal)
+        public  async Task ChangeUserInfoAsync(string username, string password, ClaimsPrincipal claimsPrincipal)
         {
             if (IsNameAlreadyExist(username))
             {
                 throw new ArgumentException("Username already exist!");
             }
 
-            ChangeData(_db.LoginUsers.FirstOrDefault(u => u.Username == claimsPrincipal.Identity.Name), new User { Username = username, Password = password });
+            ChangeData(await _db.LoginUsers.FirstOrDefaultAsync(u => u.Username == claimsPrincipal.Identity.Name), new User { Username = username, Password = password });
             Save();
         }
 
@@ -126,43 +121,23 @@ namespace WebApi2.Repository
             _db.SaveChanges();
         }
 
-        private bool disposed = false;
-
-        public virtual void Dispose(bool disposing)
-        {
-            if (!this.disposed)
-            {
-                if (disposing)
-                {
-                    _db.Dispose();
-                }
-            }
-            this.disposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        public async Task<bool> ContainItemAsync(IUser user)
+        public async Task<bool> ContainItemAsync(User user)
         {
             User newUser = await _db.LoginUsers.FirstOrDefaultAsync(u => u.Username == user.Username && u.Password == user.Password);
             return newUser == null ? false : true;  
         }
 
-        public bool ContainItem(IUser user)
+        public bool ContainItem(User user)
         {
             User newUser = _db.LoginUsers.FirstOrDefault(u => u.Username == user.Username && u.Password == user.Password);
             return newUser == null ? false : true;
         }
 
-        public bool UserLoginWithToken(IUser model, IConfiguration configuration, HttpContext context)
+        public async Task<bool> UserLoginWithTokenAsync(User model, IConfiguration configuration, HttpContext context)
         {
             if (model.Username != null && model.Password != null)
             {
-                User user = GetItem(model);
+                User user = await GetItemAsync(model);
                 if (user != null)
                 {
                     var claims = new List<Claim>
@@ -202,7 +177,7 @@ namespace WebApi2.Repository
             }
         }
 
-        public string UserRegistrWithToken(IUser model, IConfiguration configuration, HttpContext context)
+        public async Task<string> UserRegistrWithTokenAsync(User model, IConfiguration configuration, HttpContext context)
         {
             if (model.Username != null && model.Password != null)
             {
@@ -210,17 +185,12 @@ namespace WebApi2.Repository
                 {
                     User user = new User { Username = model.Username, Password = model.Password, Role = "user" };
                     Create(user);
-                    UserLoginWithToken(user, configuration, context);
-                    return $"Welcome, {model.Username}";
+                    await UserLoginWithTokenAsync(user, configuration, context);
+                    return  $"Welcome, {model.Username}";
                 }
                 return "User ALready Exist!";
             }
             return "Wrong format!";
-        }
-
-        public User GetUserByName(string username)
-        {
-            return _db.LoginUsers.FirstOrDefault(u => u.Username == username);
         }
     }
 }

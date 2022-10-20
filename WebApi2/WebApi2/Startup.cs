@@ -1,4 +1,4 @@
-﻿using WebApi2.Models;
+﻿using WebApi2.Context;
 using Microsoft.EntityFrameworkCore;
 using WebApi2.Repository;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -6,18 +6,30 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.Data.SqlClient;
+using System.Configuration;
+using System.Xml.Linq;
+using Microsoft.Extensions.Configuration;
 
 namespace WebApi2
 {
     public class Startup
     {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
         public void ConfigureServices(IServiceCollection services)
         {
-            string con = "Server=localhost;Database=UserData;User=sa;Password=StrongPassword@123;";
-            // устанавливаем контекст данных
+            var conStrBuilder = new SqlConnectionStringBuilder(Configuration.GetConnectionString("DefaultConnection"));
+            conStrBuilder.Password = Configuration["DbPassword"];
+            var connection = conStrBuilder.ConnectionString;
 
             services.AddSwaggerGen();
-            services.AddDbContext<UsersContext>(options => options.UseSqlServer(con));
+            services.AddDbContext<UsersContext>(options => options.UseSqlServer(connection));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
                     {
@@ -25,21 +37,12 @@ namespace WebApi2
                         options.SaveToken = true;
                         options.TokenValidationParameters = new TokenValidationParameters
                         {
-                            // укзывает, будет ли валидироваться издатель при валидации токена
                             ValidateIssuer = true,
-                            // строка, представляющая издателя
                             ValidIssuer = AuthOptions.ISSUER,
-
-                            // будет ли валидироваться потребитель токена
                             ValidateAudience = true,
-                            // установка потребителя токена
                             ValidAudience = AuthOptions.AUDIENCE,
-                            // будет ли валидироваться время существования
                             ValidateLifetime = true,
-
-                            // установка ключа безопасности
                             IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
-                            // валидация ключа безопасности
                             ValidateIssuerSigningKey = true,
                         };
                     });
@@ -53,17 +56,15 @@ namespace WebApi2
         public void Configure(IApplicationBuilder app)
         {
             app.UseDeveloperExceptionPage();
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
-
-            app.UseCors(x => x
-        .WithOrigins("https://localhost:7097") 
-        .AllowCredentials()
-        .AllowAnyMethod()
-        .AllowAnyHeader());
-
+            app.UseCors(x => x  
+                .WithOrigins("https://localhost:7097") 
+                .AllowCredentials()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                );
             app.UseCookiePolicy(new CookiePolicyOptions
             {
                 MinimumSameSitePolicy = SameSiteMode.Strict,

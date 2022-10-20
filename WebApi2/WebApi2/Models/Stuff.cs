@@ -1,5 +1,4 @@
-﻿using System;
-namespace WebApi2.Models
+﻿namespace WebApi2.Models
 {
     public class Stuff
     {
@@ -8,7 +7,7 @@ namespace WebApi2.Models
         public string Brand { get; set; }
         public string Seria { get; set; }
 		public string Model { get; set; }
-		public int Count { get; set; }
+        public int Count { get; set; } = 0;
         public decimal Price { get; set; }
     }
 }

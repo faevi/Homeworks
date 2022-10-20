@@ -1,6 +1,4 @@
-﻿using System;
-using System.Data;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -10,8 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using WebApi2.Models;
 using WebApi2.Repository;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using Microsoft.Extensions.Configuration;
 
 namespace WebApi2.Controllers
 {
@@ -30,40 +27,27 @@ namespace WebApi2.Controllers
         }
 
         [HttpPost]
-        public string Registeration(User model)
+        public async Task<IActionResult> Registeration(User model)
         {
             if (ModelState.IsValid)
             {
-                return _repository.SqlUserRepository.UserRegistrWithToken(model, _configuration, HttpContext);
+                return Ok(await _repository.SqlUserRepository.UserRegistrWithTokenAsync(model, _configuration, HttpContext));
             }
-            return "Something wrong :)";
+            return BadRequest("Something wrong :)");
         }
 
         [HttpPost]
-        public string Login(string username, string password)
+        public async Task<IActionResult> Login(string username, string password)
         {
-            LoginModel model = new LoginModel { Username = username, Password = password };
+            User model = new User { Username = username, Password = password };
             if (ModelState.IsValid)
             {
-                if (_repository.SqlUserRepository.UserLoginWithToken(model, _configuration, HttpContext))
+                if (await _repository.SqlUserRepository.UserLoginWithTokenAsync(model, _configuration, HttpContext))
                 {
-                    return $"Welcome, {model.Username}";
+                    return Ok($"Welcome, {model.Username}");
                 }
             }
-            return "Something wrong :)";
-        }
-
-        [HttpGet]
-        public string GetAll()
-        {
-            IConfiguration config = _configuration;
-            if (config is null) return "cringe";
-            string result = "";
-            foreach (User user in _repository.SqlUserRepository.GetList())
-            {
-                result += " " + user.Username + " " + user.Password ;
-            }
-            return result;
+            return BadRequest("Something wrong :)");
         }
     }
 }

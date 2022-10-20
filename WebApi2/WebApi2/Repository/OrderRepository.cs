@@ -1,8 +1,9 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using WebApi2.Models;
+using WebApi2.Context;
 using System.Text;
+
 namespace WebApi2.Repository
 {
     public class OrderRepository : IOrderRepository
@@ -25,26 +26,6 @@ namespace WebApi2.Repository
             Order order = _db.OrderSet.Find(id);
             if (order != null)
                 _db.OrderSet.Remove(order);
-        }
-
-        private bool disposed = false;
-
-        public virtual void Dispose(bool disposing)
-        {
-            if (!this.disposed)
-            {
-                if (disposing)
-                {
-                    _db.Dispose();
-                }
-            }
-            this.disposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         public Order GetItem(int id)
@@ -77,16 +58,16 @@ namespace WebApi2.Repository
              _db.Entry(item).State = EntityState.Modified;
         }
 
-        public void CreateOrder(ClaimsPrincipal claimsPrincipal)
+        public async Task CreateOrderAsync(ClaimsPrincipal claimsPrincipal)
         {
-            int user_Id = _db.LoginUsers.FirstOrDefault(u => u.Username == claimsPrincipal.Identity.Name).Id;
-            Order order = new Order { Customer_Id = user_Id, DateTime = DateTime.Now.ToString(), Stuffs = new List<Stuff>() };
+            User user = await _db.LoginUsers.FirstOrDefaultAsync(u => u.Username == claimsPrincipal.Identity.Name);
+            Order order = new Order { Customer_Id = user.Id, DateTime = DateTime.Now.ToString(), Stuffs = new List<Stuff>() };
             _db.OrderSet.Add(order);
         }
 
-        public void AddStuffToOrder(int orderId, int StuffId)
+        public async Task AddStuffToOrderAsync(int orderId, int StuffId)
         {
-            Stuff stuff = _db.StuffSet.Find(StuffId);
+            Stuff stuff = await _db.StuffSet.FindAsync(StuffId);
 
             if (stuff == null)
             {
@@ -113,15 +94,15 @@ namespace WebApi2.Repository
             }
         }
 
-        public void AddStuff(Stuff stuff)
+        public async Task AddStuffAsync(Stuff stuff)
         {
-            _db.StuffSet.Add(stuff);
+            await _db.StuffSet.AddAsync(stuff);
         }
 
-        public void AddProperty(Property property, int stuffId)
+        public async Task AddPropertyAsync(Property property, int stuffId)
         {
-            Property tempProperty = _db.PropertySet.FirstOrDefault(u => u.PropertyName == property.PropertyName);
-            Category tempCategorty = _db.CategorySet.FirstOrDefault(u => u.Id == property.Category_Id);
+            Property tempProperty = await _db.PropertySet.FirstOrDefaultAsync(u => u.PropertyName == property.PropertyName);
+            Category tempCategorty =  await _db.CategorySet.FirstOrDefaultAsync(u => u.Id == property.Category_Id);
 
             if (tempCategorty is null)
             {
@@ -133,7 +114,7 @@ namespace WebApi2.Repository
                 _db.PropertySet.Add(property);
                 _db.SaveChanges();
                 Value value = new Value { Property_Id = _db.PropertySet.FirstOrDefault(u => u.PropertyName == property.PropertyName).Id, Stuff_Id = stuffId };
-                AddValue(value);
+                await AddValueAsync(value);
             }
             else
             {
@@ -142,44 +123,37 @@ namespace WebApi2.Repository
             
         }
 
-        public void AddValue(Value value)
+        public async Task AddValueAsync(Value value)
         {
-            Value tempValue = _db.ValeuSet.FirstOrDefault(u => u.Stuff_Id == value.Stuff_Id);
+            Value tempValue = await _db.ValueSet.FirstOrDefaultAsync(u => u.Stuff_Id == value.Stuff_Id);
 
             if (tempValue is null)
             {
-                _db.ValeuSet.Add(value);
+                await _db.ValueSet.AddAsync(value);
             }
             else
             {
-                _db.ValeuSet.Remove(tempValue);
-                _db.ValeuSet.Add(value);
+                _db.ValueSet.Remove(tempValue);
+                await _db.ValueSet.AddAsync(value);
             }
             
         }
 
-        public void AddCategory(Category category)
+        public async Task AddCategoryAsync(Category category)
         {
-            Category tempCategory = _db.CategorySet.FirstOrDefault(u => u.CategoryName == category.CategoryName);
+            Category tempCategory = await _db.CategorySet.FirstOrDefaultAsync(u => u.CategoryName == category.CategoryName);
 
             if (tempCategory is not null)
             {
                 throw new ArgumentException("Category with this name already exist");
             }
-            _db.CategorySet.Add(category);
+            await _db.CategorySet.AddAsync(category);
         }
 
-        private int CompareByPrice(Stuff x, Stuff y)
+        private int CompareByPriceAsync(Stuff x, Stuff y)
         {
             if (x.Price == y.Price) return 0;
             else if (x.Price < y.Price) return -1;
-            else return 1;
-        }
-
-        private int CompareByCount(Stuff x, Stuff y)
-        {
-            if (x.Count == y.Count) return 0;
-            else if (x.Count < y.Count) return -1;
             else return 1;
         }
 
@@ -188,7 +162,7 @@ namespace WebApi2.Repository
             return $"Id: {stuff.Id}, Brand {stuff.Brand}, Seria {stuff.Seria}, Model {stuff.Model}, Price {stuff.Price}";
         }
 
-        private string StuffListToString (List<Stuff> stuffs, int categoryId)
+        private string StuffListToString(List<Stuff> stuffs, int categoryId)
         {
             StringBuilder result = new StringBuilder($"Stuff in categoty with Id {categoryId}: \n");
 
@@ -200,7 +174,7 @@ namespace WebApi2.Repository
             return result.ToString();
         }
 
-        public string GetStuffCategoryByPriceAndName(int categotyId, bool sortByPrice, bool withNames = false)
+        public async Task<string> GetStuffCategoryByPriceAndNameAsync(int categotyId, bool sortByPrice, bool withNames = false)
         {
             
             List<Stuff> categoryStuffList = _db.StuffSet.Where(u => u.Category_Id == categotyId).ToList();
@@ -211,14 +185,14 @@ namespace WebApi2.Repository
                 {
                     categoryStuffList.Sort(delegate (Stuff x, Stuff y)
                     {
-                        if (x.Model.CompareTo(y.Model) == 0) return CompareByPrice(x, y);
+                        if (x.Model.CompareTo(y.Model) == 0) return CompareByPriceAsync(x, y);
                         else if (x.Model.CompareTo(y.Model) < 0) return -1;
                         else return 1;
                     });
                 }
                 else
                 {
-                    categoryStuffList.Sort((Stuff x, Stuff y) => CompareByPrice(x, y));
+                    categoryStuffList.Sort((Stuff x, Stuff y) => CompareByPriceAsync(x, y));
                 }
             }
             else
@@ -234,7 +208,7 @@ namespace WebApi2.Repository
             return StuffListToString(categoryStuffList, categotyId);
         }
 
-        public string GetStuffCategoryByCountOrSeria(int categotyId, bool byCount, string bySeria = "None")
+        public async Task<string> GetStuffCategoryByCountOrSeriaAsync(int categotyId, bool byCount, string bySeria = "None")
         {
             List<Stuff> categoryStuffList;
 
@@ -242,41 +216,41 @@ namespace WebApi2.Repository
             {
                 if (bySeria != "None")
                 {
-                    categoryStuffList = _db.StuffSet.Where(u => u.Count > 0 && u.Seria == bySeria).ToList();
+                    categoryStuffList = await _db.StuffSet.Where(u => u.Count > 0 && u.Seria == bySeria).ToListAsync();
                 }
                 else
                 {
-                    categoryStuffList = _db.StuffSet.Where(u => u.Count > 0).ToList();
+                    categoryStuffList = await _db.StuffSet.Where(u => u.Count > 0).ToListAsync();
                 }
             }
             else
             {
-                categoryStuffList = _db.StuffSet.Where(u => u.Seria == bySeria).ToList();
+                categoryStuffList = await _db.StuffSet.Where(u => u.Seria == bySeria).ToListAsync();
             }
 
             return StuffListToString(categoryStuffList, categotyId);
         }
 
-        public string GetStuffCategoryByFeature(int categotyId, string feature, string featureValue)
+        public async Task<string> GetStuffCategoryByFeatureAsync(int categotyId, string feature, string featureValue)
         {
             return feature switch
             {
-                "Brand" => StuffListToString(_db.StuffSet.Where(u => u.Brand == featureValue).ToList(), categotyId),
-                "Seria" => StuffListToString(_db.StuffSet.Where(u => u.Seria == featureValue).ToList(), categotyId),
-                "Model" => StuffListToString(_db.StuffSet.Where(u => u.Model == featureValue).ToList(), categotyId),
-                "Count" => StuffListToString(_db.StuffSet.Where(u => u.Count == Convert.ToInt32(featureValue)).ToList(), categotyId),
-                "Price" => StuffListToString(_db.StuffSet.Where(u => u.Price == Convert.ToDecimal(featureValue)).ToList(), categotyId),
+                "Brand" => StuffListToString(await _db.StuffSet.Where(u => u.Brand == featureValue).ToListAsync(), categotyId),
+                "Seria" => StuffListToString(await _db.StuffSet.Where(u => u.Seria == featureValue).ToListAsync(), categotyId),
+                "Model" => StuffListToString(await _db.StuffSet.Where(u => u.Model == featureValue).ToListAsync(), categotyId),
+                "Count" => StuffListToString(await _db.StuffSet.Where(u => u.Count == Convert.ToInt32(featureValue)).ToListAsync(), categotyId),
+                "Price" => StuffListToString(await _db.StuffSet.Where(u => u.Price == Convert.ToDecimal(featureValue)).ToListAsync(), categotyId),
                 _ => "Wrong feature name!"
             };
         }
 
-        public string GetDesctriptionOfStuff(int stuffId)
+        public async Task<string> GetDesctriptionOfStuffAsync(int stuffId)
         {
-            Value value = _db.ValeuSet.FirstOrDefault(u => u.Stuff_Id == stuffId);
+            Value value = await _db.ValueSet.FirstOrDefaultAsync(u => u.Stuff_Id == stuffId);
 
             if (value is not null)
             {
-                return _db.PropertySet.FirstOrDefault(u => u.Id == value.Property_Id).Decription;
+                return  _db.PropertySet.FirstOrDefault(u => u.Id == value.Property_Id).Decription;
             }
             else
             {

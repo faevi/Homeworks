@@ -1,5 +1,5 @@
-﻿using System;
-using WebApi2.Models;
+﻿using WebApi2.Context;
+
 namespace WebApi2.Repository
 {
     public class RepositoryWrapper : IRepositoryWrapper

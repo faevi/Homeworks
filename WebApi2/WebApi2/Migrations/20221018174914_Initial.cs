@@ -4,7 +4,7 @@
 
 namespace WebApi2.Migrations
 {
-    public partial class withStuff : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -19,6 +19,21 @@ namespace WebApi2.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CategorySet", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LoginUsers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LoginUsers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -52,7 +67,7 @@ namespace WebApi2.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ValeuSet",
+                name: "ValueSet",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -62,7 +77,7 @@ namespace WebApi2.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ValeuSet", x => x.Id);
+                    table.PrimaryKey("PK_ValueSet", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -89,12 +104,26 @@ namespace WebApi2.Migrations
                         principalColumn: "Id");
                 });
 
-            migrationBuilder.UpdateData(
+            migrationBuilder.InsertData(
+                table: "CategorySet",
+                columns: new[] { "Id", "CategoryName" },
+                values: new object[] { 1, "Valenki" });
+
+            migrationBuilder.InsertData(
                 table: "LoginUsers",
-                keyColumn: "Id",
-                keyValue: 1,
-                column: "Username",
-                value: "admin");
+                columns: new[] { "Id", "Password", "Role", "Username" },
+                values: new object[] { 1, "123456", "admin", "admin" });
+
+            migrationBuilder.InsertData(
+                table: "StuffSet",
+                columns: new[] { "Id", "Brand", "Category_Id", "Count", "Model", "OrderId", "Price", "Seria" },
+                values: new object[,]
+                {
+                    { 1, "Nike", 1, 100, "L", null, 1000m, "1.0" },
+                    { 2, "Nike", 1, 100, "M", null, 1000m, "1.0" },
+                    { 3, "Supremme", 1, 100, "M", null, 10000m, "1.0" },
+                    { 4, "Supremme", 1, 100, "XL", null, 10000m, "2.0" }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_StuffSet_OrderId",
@@ -108,23 +137,19 @@ namespace WebApi2.Migrations
                 name: "CategorySet");
 
             migrationBuilder.DropTable(
+                name: "LoginUsers");
+
+            migrationBuilder.DropTable(
                 name: "PropertySet");
 
             migrationBuilder.DropTable(
                 name: "StuffSet");
 
             migrationBuilder.DropTable(
-                name: "ValeuSet");
+                name: "ValueSet");
 
             migrationBuilder.DropTable(
                 name: "OrderSet");
-
-            migrationBuilder.UpdateData(
-                table: "LoginUsers",
-                keyColumn: "Id",
-                keyValue: 1,
-                column: "Username",
-                value: "admin@mail.ru");
         }
     }
 }

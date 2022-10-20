@@ -1,9 +1,6 @@
-﻿using System;
-using System.Data;
-
-namespace WebApi2.Models
+﻿namespace WebApi2.Models
 {
-	public class User : IUser
+	public class User
 	{
 			public int Id { get; set; }
 			public string Username { get; set; }

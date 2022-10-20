@@ -1,5 +1,4 @@
-﻿using System;
-namespace WebApi2.Models
+﻿namespace WebApi2.Models
 {
     public class Property
     {

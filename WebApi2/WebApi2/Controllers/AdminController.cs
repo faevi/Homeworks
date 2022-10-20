@@ -1,6 +1,4 @@
-﻿using System;
-using System.Data;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -10,8 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using WebApi2.Models;
 using WebApi2.Repository;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace WebApi2.Controllers
 {
@@ -27,45 +23,47 @@ namespace WebApi2.Controllers
         {
             _repository = repository;
             _configuration = configuration;
-            _repository.Save();
         }
 
         [HttpPost]
-        public string ChangeUser(string user, User newUser)
+        public async Task<IActionResult> ChangeUser(string user, User newUser)
         {
             try
             {
-                if (_repository.SqlUserRepository.TryChangeUserByAdmin(user, newUser))
+                if (await _repository.SqlUserRepository.TryChangeUserByAdminAsync(user, newUser))
                 {
-                    return "User has been changed";
+                    return Ok("User has been changed");
                 }
-                return "Something wrong";
+                return BadRequest("Something wrong");
             }
             catch (ArgumentException)
             {
-                return "Username already exist";
+                return BadRequest("Username already exist");
             }
         }
 
         [HttpPost]
-        public void AddCategoryByAdmin(string categoryName)
+        public async Task<IActionResult> AddCategoryByAdmin(string categoryName)
         {
-            _repository.OrderRepository.AddCategory(new Category { CategoryName = categoryName });
+            await _repository.OrderRepository.AddCategoryAsync(new Category { CategoryName = categoryName });
             _repository.Save();
+            return Ok($"Category with name {categoryName} was created");
         }
 
         [HttpPost]
-        public void AddStuffByAdmin(Stuff stuff)
+        public async Task<IActionResult> AddStuffByAdmin(Stuff stuff)
         {
-            _repository.OrderRepository.AddStuff(stuff);
+            await _repository.OrderRepository.AddStuffAsync(stuff);
             _repository.Save();
+            return Ok();
         }
 
         [HttpPost]
-        public void AddPropertyByAdmin(Property property, int stuffId)
+        public async Task<IActionResult> AddPropertyByAdmin(Property property, int stuffId)
         {
-            _repository.OrderRepository.AddProperty(property, stuffId);
+            await _repository.OrderRepository.AddPropertyAsync(property, stuffId);
             _repository.Save();
+            return Ok();
         }
     }
 }

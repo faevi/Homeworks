@@ -1,7 +1,6 @@
-﻿using System;
-namespace WebApi2.Repository
+﻿namespace WebApi2.Repository
 {
-    public interface IRepository<T> : IDisposable
+    public interface IRepository<T>
     {
         public IEnumerable<T> GetList();
         public Task<List<T>> GetTaskListAsync();

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using WebApi2.Models;
+using WebApi2.Context;
 
 #nullable disable
 
@@ -224,7 +224,7 @@ namespace WebApi2.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ValeuSet");
+                    b.ToTable("ValueSet");
                 });
 
             modelBuilder.Entity("WebApi2.Models.Stuff", b =>

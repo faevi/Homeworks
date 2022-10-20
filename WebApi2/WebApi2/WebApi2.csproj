@@ -26,11 +26,15 @@
     <None Remove="Repository\" />
     <None Remove="Microsoft.EntityFrameworkCore.Tools" />
     <None Remove="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <None Remove="Context\" />
+    <None Remove="Repository\Interfaces\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />
     <Folder Include="Repository\" />
     <Folder Include="wwwroot\" />
+    <Folder Include="Context\" />
+    <Folder Include="Repository\Interfaces\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\" />

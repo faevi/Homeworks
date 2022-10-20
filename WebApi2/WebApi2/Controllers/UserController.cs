@@ -1,6 +1,4 @@
-﻿using System;
-using System.Data;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -11,8 +9,6 @@ using Microsoft.IdentityModel.Tokens;
 using WebApi2.Models;
 using WebApi2.Repository;
 
-// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace WebApi2.Controllers
 {
     [ApiController]
@@ -21,63 +17,62 @@ namespace WebApi2.Controllers
     public class UserController : Controller
     {
         private IRepositoryWrapper _repository;
-        private IConfiguration _configuration;
 
         public UserController(IRepositoryWrapper repository, IConfiguration configuration)
         {
             _repository = repository;
-            _configuration = configuration;
-            _repository.Save();
         }
 
         [HttpPost]
-        public string ChangeInfo(string username, string password)
+        public async Task<IActionResult> ChangeInfo(string username, string password)
         {
             try
             {
-                _repository.SqlUserRepository.ChangeUserInfo(username, password, User);
-                return "The data has been changed";
+                await _repository.SqlUserRepository.ChangeUserInfoAsync(username, password, User);
+                return Ok("The data has been changed");
             }
             catch (ArgumentException)
-            {
-                return "Username already exist";
+            {   
+                return BadRequest("Username already exist");
             }
         }
 
         [HttpPost]
-        public async Task CreateOrder()
+        public async Task<IActionResult> CreateOrder()
         {
-            _repository.OrderRepository.CreateOrder(User);
+            await _repository.OrderRepository.CreateOrderAsync(User);
             await _repository.SaveAsync();
+            return Ok();
         }
 
         [HttpPost]
-        public async Task AddStuff(int orderId, int stuffId)
+        public async Task<IActionResult> AddStuff(int orderId, int stuffId)
         {
-            _repository.OrderRepository.AddStuffToOrder(orderId, stuffId);
+            await _repository.OrderRepository.AddStuffToOrderAsync(orderId, stuffId);
             await _repository.SaveAsync();
+            return Ok();
         }
 
         [HttpGet]
-        public string GetStuffInCategGetStuffCategoryByPriceAndNameByUser(int categotyId, bool sortByPrice, bool withNames = false)
+        public async Task<IActionResult> GetStuffInCategGetStuffCategoryByPriceAndNameByUser(int categotyId, bool sortByPrice, bool withNames = false)
         {
-            return _repository.OrderRepository.GetStuffCategoryByPriceAndName(categotyId, sortByPrice, withNames);
+            return Ok(await _repository.OrderRepository.GetStuffCategoryByPriceAndNameAsync(categotyId, sortByPrice, withNames));
         }
 
         [HttpGet]
-        public string GetStuffCategoryByCountOrSeriaByUser(int categotyId, bool byCount, string bySeria = "None")
+        public async Task<IActionResult> GetStuffCategoryByCountOrSeriaByUser(int categotyId, bool byCount, string bySeria = "None")
         {
-            return _repository.OrderRepository.GetStuffCategoryByCountOrSeria(categotyId, byCount, bySeria);
+            return Ok( await _repository.OrderRepository.GetStuffCategoryByCountOrSeriaAsync(categotyId, byCount, bySeria));
         }
 
         [HttpGet]
-        public string GetStuffCategoryByFeatureByUser(int categotyId, string feature, string featureValue)
+        public async Task<IActionResult> GetStuffCategoryByFeatureByUser(int categotyId, string feature, string featureValue)
         {
-            return _repository.OrderRepository.GetStuffCategoryByFeature(categotyId, feature, featureValue);
+            return Ok(await _repository.OrderRepository.GetStuffCategoryByFeatureAsync(categotyId, feature, featureValue));
         }
 
         [HttpGet]
-        public string ShowStuffProperty(int stuffId) => _repository.OrderRepository.GetDesctriptionOfStuff(stuffId);
+        public async Task<IActionResult> ShowStuffProperty(int stuffId) => Ok( await _repository.OrderRepository.GetDesctriptionOfStuffAsync(stuffId));
     }
 }
 

@@ -1,5 +1,4 @@
-﻿using System;
-namespace WebApi2.Repository
+﻿namespace WebApi2.Repository
 {
     public interface IRepositoryWrapper
     {
