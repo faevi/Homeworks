@@ -23,7 +23,6 @@ namespace WebApi2.Controllers
         {
             _repository = repository;
             _configuration = configuration;
-            _repository.Save();
         }
 
         [HttpPost]
