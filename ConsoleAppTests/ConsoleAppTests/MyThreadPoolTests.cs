@@ -61,7 +61,7 @@ namespace ConsoleAppTests
                 newTaskList[i*3+2] = newNewTestTask;
             }
 
-            testPool.ShutDown();
+            
             Thread.Sleep(300);
 
             for (int i = 0; i < 100; i++)
@@ -70,7 +70,8 @@ namespace ConsoleAppTests
                 Assert.AreEqual(newTaskList[i*3].Result, taskList[i].Result*4);
                 Assert.AreEqual(newTaskList[i*3+1].Result, taskList[i].Result*5);
                 Assert.AreEqual(newTaskList[i*3+2].Result, newTaskList[i*3].Result*4);
-            }            
+            } 
+            testPool.ShutDown();
         }
 
         [TestMethod]
